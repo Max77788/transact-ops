@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/server";
 
 const SIGNING_SECRET = process.env.WEBHOOK_SIGNING_SECRET || "transactops-dev-secret";
 
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     const orgId = request.headers.get("x-org-id");
     const eventType = payload.event_type || payload.event || "unknown";
 
-    const supabase = await createClient();
+    const supabase = createAdminClient();
 
     // Log raw webhook event
     const { data: webhookEvent } = await (supabase as any)

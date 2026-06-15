@@ -165,7 +165,8 @@ export async function getCheckins(orgId: string) {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("checkins")
-    .select("*, owner:owners(*), actions:checkin_actions(*)")
+    .select("*, owner:owners!inner(*), actions:checkin_actions(*)")
+    .eq("owner.org_id", orgId)
     .order("scheduled_date", { ascending: true });
   if (error) throw error;
   return data;

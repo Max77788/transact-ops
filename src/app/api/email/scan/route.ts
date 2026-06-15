@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { logAiRun } from "@/lib/queries";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/server";
 
 // Mock email corpus
 const MOCK_EMAILS = [
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json().catch(() => ({}));
-    const supabase = await createClient();
+    const supabase = createAdminClient();
 
     // Simulate AI triage: pick 3-5 actionable emails (skip spam)
     const actionable = MOCK_EMAILS.filter((e) => e.flag_type !== "spam");

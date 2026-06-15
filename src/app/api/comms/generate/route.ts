@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { logAiRun, getDeal } from "@/lib/queries";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/server";
 
 const SUPPORTED_TYPES = ["feedback", "open_house"] as const;
 type CommsType = (typeof SUPPORTED_TYPES)[number];
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     const drafts: any[] = [];
-    const supabase = await createClient();
+    const supabase = createAdminClient();
 
     for (const dealId of dealIds) {
       const deal = await getDeal(dealId);

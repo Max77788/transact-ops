@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     const { data, error } = await (supabase as any)
       .from("checkins")
       .select("*, owner:owners!inner(*), actions:checkin_actions(*)")
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = await createClient();
+    const supabase = createAdminClient();
 
     // Verify owner belongs to this org
     const { data: owner } = await (supabase as any)

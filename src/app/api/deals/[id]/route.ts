@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getDeal, advanceDeal } from "@/lib/queries";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/database.types";
 
 export async function GET(
@@ -37,7 +37,7 @@ export async function PATCH(
     const { id } = await params;
     const body = await request.json();
 
-    const supabase = await createClient();
+    const supabase = createAdminClient();
 
     // Build update payload from allowed fields
     type DealUpdate = Database["public"]["Tables"]["deals"]["Update"];
