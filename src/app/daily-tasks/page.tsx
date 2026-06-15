@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ShellLayout } from "@/components/shell-layout";
 import { cn } from "@/lib/utils";
 import {
@@ -429,6 +429,48 @@ export default function DailyTasksPage() {
   const [quickPriority, setQuickPriority] = useState<Priority>("med");
   const [quickAssignee, setQuickAssignee] = useState("JT");
   const [showAddModal, setShowAddModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // On mount, try to fetch tasks from API; fall back to mock
+  useEffect(() => {
+    fetch("/api/tasks", { headers: { "x-org-id": "00000000-0000-0000-0000-000000000001" } })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.data?.length) {
+          // Map flat API tasks into property groups (by deal) and brokerage groups (unassigned)
+          const apiTasks = d.data.map((t: any) => ({
+            id: t.id,
+            text: t.title,
+            done: t.completed ?? false,
+            priority: (t.priority as Priority) || "med",
+            assignee: t.assigned_to || "JT",
+            recurrence: (t.recurrence as Recurrence) || "once",
+            dealName: t.deal_name || null,
+          }));
+          const withDeal = apiTasks.filter((t: any) => t.dealName);
+          const withoutDeal = apiTasks.filter((t: any) => !t.dealName);
+
+          // Group into property tasks
+          const dealGroups = new Map<string, any[]>();
+          withDeal.forEach((t: any) => {
+            if (!dealGroups.has(t.dealName)) dealGroups.set(t.dealName, []);
+            dealGroups.get(t.dealName)!.push(t);
+          });
+          const propGroups: PropertyTaskGroup[] = [];
+          dealGroups.forEach((tasks, name) => {
+            propGroups.push({ propertyName: name, tasks });
+          });
+          if (propGroups.length > 0) setPropertyTasks(propGroups);
+
+          // Group unassigned into brokerage
+          if (withoutDeal.length > 0) {
+            setBrokerageTasks([{ label: "General", color: "#c8f064", tasks: withoutDeal }]);
+          }
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   const today = new Date();
   today.setDate(today.getDate() + dateOffset);

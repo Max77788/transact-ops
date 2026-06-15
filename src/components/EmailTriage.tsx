@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { Mail, ArrowRight, Check, X, Search, Clock } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Mail, ArrowRight, Check, X, Search, Clock, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { mockEmails } from "@/lib/mock-data";
-import type { Urgency, EmailCard } from "@/lib/types";
+import type { Urgency, EmailCard, SenderType } from "@/lib/types";
 
 const urgencyConfig: Record<Urgency, { color: string; bg: string; border: string; label: string }> = {
   high: {
@@ -45,17 +45,77 @@ const senderText: Record<string, string> = {
   Client: "var(--low)",
 };
 
+// Map API email flags to EmailCard format
+function mapFlagToEmailCard(flag: any, idx: number): EmailCard {
+  const flagTypeMap: Record<string, { senderType: SenderType; urgency: Urgency }> = {
+    offer: { senderType: "Agent", urgency: "high" },
+    title: { senderType: "Title Company", urgency: "medium" },
+    finance: { senderType: "Lender", urgency: "medium" },
+    inspection: { senderType: "Inspector", urgency: "high" },
+    appraisal: { senderType: "Lender", urgency: "high" },
+    legal: { senderType: "Attorney", urgency: "high" },
+    seller_comms: { senderType: "Client", urgency: "medium" },
+  };
+  const mapped = flagTypeMap[flag.flag_type] || { senderType: "Agent" as SenderType, urgency: "low" as Urgency };
+  return {
+    id: flag.id || `flag-${idx}`,
+    propertyName: flag.subject || "Untitled",
+    senderType: mapped.senderType,
+    senderName: flag.from_email || "Unknown",
+    date: new Date(flag.created_at || Date.now()).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    urgency: mapped.urgency,
+    summary: flag.body_snippet || flag.ai_summary || "",
+    proposedTask: `Review ${flag.flag_type} for ${flag.subject || "this deal"}`,
+  };
+}
+
 export default function EmailTriage() {
   const [filter, setFilter] = useState<Urgency | "all">("all");
   const [scanning, setScanning] = useState(false);
-  const [emails, setEmails] = useState(mockEmails);
+  const [emails, setEmails] = useState<EmailCard[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // On mount, try to fetch flagged emails from API; fall back to mock
+  const fetchEmails = async () => {
+    try {
+      const r = await fetch("/api/email/scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-org-id": "00000000-0000-0000-0000-000000000001" },
+        body: JSON.stringify({}),
+      });
+      const d = await r.json();
+      if (d.data?.flags?.length) {
+        setEmails(d.data.flags.map((f: any, i: number) => mapFlagToEmailCard(f, i)));
+        return;
+      }
+    } catch {}
+    setEmails(mockEmails);
+  };
+
+  useEffect(() => {
+    fetchEmails().finally(() => setLoading(false));
+  }, []);
 
   const filtered =
     filter === "all" ? emails : emails.filter((e) => e.urgency === filter);
 
-  const handleScan = () => {
+  const handleScan = async () => {
     setScanning(true);
-    setTimeout(() => setScanning(false), 3000);
+    try {
+      const r = await fetch("/api/email/scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-org-id": "00000000-0000-0000-0000-000000000001" },
+        body: JSON.stringify({}),
+      });
+      const d = await r.json();
+      if (d.data?.flags?.length) {
+        setEmails(d.data.flags.map((f: any, i: number) => mapFlagToEmailCard(f, i)));
+      }
+    } catch {
+      // silently fall back to current emails
+    } finally {
+      setScanning(false);
+    }
   };
 
   const handleAccept = (id: string) => {
@@ -123,8 +183,17 @@ export default function EmailTriage() {
         </div>
       )}
 
+      {/* Loading state */}
+      {loading && (
+        <div className="flex flex-col items-center justify-center py-20 text-[var(--text3)]">
+          <Loader2 size={24} className="mb-3 animate-spin opacity-50" />
+          <span className="text-sm">Loading flagged emails...</span>
+        </div>
+      )}
+
       {/* Email cards */}
-      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
+      {!loading && (
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
         {filtered.map((email) => (
           <EmailCardItem
             key={email.id}
@@ -139,7 +208,8 @@ export default function EmailTriage() {
             <span className="text-sm">No emails in this category</span>
           </div>
         )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

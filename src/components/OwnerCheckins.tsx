@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   ChevronDown,
   ChevronRight,
@@ -28,6 +28,8 @@ import type {
   Sentiment,
   AgendaItem,
   ActionItem,
+  CalendarEvent,
+  DealType,
 } from "@/lib/types";
 
 // ---- Status config with border colors ----
@@ -91,6 +93,59 @@ export default function OwnerCheckins() {
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth());
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [owners, setOwners] = useState<OwnerCard[]>(mockOwners);
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>(mockCalendarEvents);
+  const [loading, setLoading] = useState(true);
+
+  // On mount, try to fetch checkins from API; fall back to mock
+  useEffect(() => {
+    fetch("/api/checkins", { headers: { "x-org-id": "00000000-0000-0000-0000-000000000001" } })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.data?.length) {
+          const apiOwners: OwnerCard[] = [];
+          const apiEvents: CalendarEvent[] = [];
+          d.data.forEach((c: any) => {
+            const owner = c.owner || {};
+            const o: OwnerCard = {
+              id: c.id,
+              name: owner.name || "Unknown",
+              address: owner.address || "",
+              agent: owner.agent || "",
+              phone: owner.phone || "",
+              dealType: (owner.deal_type as DealType) || "Sale",
+              stage: owner.stage || "",
+              status: (c.status as OwnerStatus) || "awaiting",
+              bookingLink: owner.booking_link || "",
+              calendlyLink: owner.calendly_link || "",
+              callDate: c.scheduled_date || "",
+              callTime: c.scheduled_time || "",
+              stageAtCall: c.stage_idx_at_call != null ? `Stage ${c.stage_idx_at_call}` : "",
+              reminderDays: 0,
+              talkingPoints: [],
+              agendaItems: (c.actions || []).map((a: any, i: number) => ({
+                id: a.id || `ag-${i}`,
+                text: a.text || a.title || "",
+                done: a.done ?? false,
+              })),
+              sentiment: (c.sentiment as Sentiment) || "neutral",
+              aiSummary: c.ai_summary || "",
+              actionItems: [],
+              rawNotes: c.raw_notes || "",
+              conversationHistory: [],
+            };
+            apiOwners.push(o);
+            if (c.scheduled_date) {
+              apiEvents.push({ date: c.scheduled_date, ownerIds: [c.id] });
+            }
+          });
+          setOwners(apiOwners);
+          setCalendarEvents(apiEvents);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
@@ -106,10 +161,10 @@ export default function OwnerCheckins() {
   // Build a map from date -> { time, firstName }[] for event chips
   const eventsByDate = useMemo(() => {
     const map: Record<string, { time: string; firstName: string; ownerId: string }[]> = {};
-    mockCalendarEvents.forEach((ev) => {
+    calendarEvents.forEach((ev) => {
       if (!map[ev.date]) map[ev.date] = [];
       ev.ownerIds.forEach((id) => {
-        const owner = mockOwners.find((o) => o.id === id);
+        const owner = owners.find((o) => o.id === id);
         if (owner) {
           const firstName = owner.name.split(" ")[0].replace("&", "").trim();
           map[ev.date].push({
@@ -121,21 +176,21 @@ export default function OwnerCheckins() {
       });
     });
     return map;
-  }, []);
+  }, [calendarEvents, owners]);
 
   // Filter owners by selected date
   const filteredOwners = useMemo(() => {
-    const owners = [...mockOwners];
+    const allOwners = [...owners];
     if (selectedDay) {
       const events = eventsByDate[selectedDay] || [];
       const ownerIds = events.map((e) => e.ownerId);
       if (ownerIds.length > 0) {
-        return owners.filter((o) => ownerIds.includes(o.id));
+        return allOwners.filter((o) => ownerIds.includes(o.id));
       }
       return [];
     }
-    return owners;
-  }, [selectedDay, eventsByDate]);
+    return allOwners;
+  }, [selectedDay, eventsByDate, owners]);
 
   // Group owners by status
   const grouped = useMemo(() => {
@@ -152,16 +207,16 @@ export default function OwnerCheckins() {
   }, [filteredOwners]);
 
   // Progress bar: completed calls / total calls with status
-  const totalCalls = mockOwners.filter((o) =>
+  const totalCalls = owners.filter((o) =>
     ["completed", "noshow", "scheduled"].includes(o.status)
   ).length;
-  const completedCalls = mockOwners.filter(
+  const completedCalls = owners.filter(
     (o) => o.status === "completed"
   ).length;
   const completionPct = totalCalls > 0 ? Math.round((completedCalls / totalCalls) * 100) : 0;
 
   // Total scheduled count for calendar header
-  const totalScheduled = mockCalendarEvents.length;
+  const totalScheduled = calendarEvents.length;
 
   const prevMonth = () => {
     if (month === 0) {

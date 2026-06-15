@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ShellLayout } from "@/components/shell-layout";
 import { cn } from "@/lib/utils";
 import { STAGES, MOCK_DEALS, Deal, StageKey, StageHistoryEntry } from "@/lib/data";
@@ -708,6 +708,18 @@ function AddDealModal({ open, onClose }: { open: boolean; onClose: () => void })
 export default function PipelinePage() {
   const [viewMode, setViewMode] = useState<ViewMode>("board");
   const [showAddModal, setShowAddModal] = useState(false);
+  const [deals, setDeals] = useState<Deal[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/deals", { headers: { "x-org-id": "00000000-0000-0000-0000-000000000001" } })
+      .then((r) => r.json())
+      .then((d) => { if (d.data) setDeals(d.data); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const displayDeals = deals ?? MOCK_DEALS;
 
   return (
     <ShellLayout actionLabel="Add deal" onActionClick={() => setShowAddModal(true)}>
@@ -737,7 +749,7 @@ export default function PipelinePage() {
         </button>
       </div>
 
-      {viewMode === "board" ? <BoardView deals={MOCK_DEALS} /> : <ListView deals={MOCK_DEALS} />}
+      {viewMode === "board" ? <BoardView deals={displayDeals} /> : <ListView deals={displayDeals} />}
 
       {/* Add Deal Modal */}
       <AddDealModal open={showAddModal} onClose={() => setShowAddModal(false)} />
