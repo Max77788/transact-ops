@@ -3,13 +3,16 @@
 import { useState } from "react";
 import { ShellLayout } from "@/components/shell-layout";
 import { cn } from "@/lib/utils";
-import { MOCK_STAGE_CONFIGS, StageConfig, StageConfigStep, StageKey } from "@/lib/data";
+import { MOCK_STAGE_CONFIGS, STAGES, StageConfig, StageConfigStep, StageKey } from "@/lib/data";
 import {
   GripVertical,
   Plus,
   Trash2,
   CheckCircle2,
   Circle,
+  Lock,
+  Anchor,
+  Info,
 } from "lucide-react";
 
 // ---- Stage Card ----
@@ -95,12 +98,33 @@ function StageCard({
               className="rounded-full shrink-0"
               style={{ width: 8, height: 8, backgroundColor: config.color }}
             />
-            <h3
-              className="text-base font-medium"
-              style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)" }}
-            >
-              {config.label}
-            </h3>
+            <div className="flex items-center gap-1.5">
+              <h3
+                className="text-base font-medium"
+                style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)" }}
+              >
+                {config.label}
+              </h3>
+              {/* Lock icon (immutable) */}
+              <span title="Stage is immutable">
+                <Lock size={11} style={{ color: "var(--text3)" }} />
+              </span>
+            </div>
+            {/* Anchor badge */}
+            {config.isCloseDateAnchor && (
+              <span
+                className="text-[9px] font-medium px-1.5 py-0.5 rounded-full flex items-center gap-1"
+                style={{
+                  backgroundColor: config.color + "20",
+                  color: config.color,
+                  fontFamily: "DM Mono, monospace",
+                  border: `1px solid ${config.color}40`,
+                }}
+              >
+                <Anchor size={10} />
+                ANCHOR
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -121,16 +145,10 @@ function StageCard({
             {doneCount}/{config.steps.length}
           </span>
         </div>
-        <div
-          className="h-1.5 rounded-full"
-          style={{ backgroundColor: "var(--surface3)" }}
-        >
+        <div className="h-1.5 rounded-full" style={{ backgroundColor: "var(--surface3)" }}>
           <div
             className="h-full rounded-full transition-all"
-            style={{
-              width: `${progressPct}%`,
-              backgroundColor: config.color,
-            }}
+            style={{ width: `${progressPct}%`, backgroundColor: config.color }}
           />
         </div>
       </div>
@@ -159,10 +177,7 @@ function StageCard({
       </div>
 
       {/* Divider */}
-      <div
-        className="mb-4"
-        style={{ height: 1, backgroundColor: "var(--border)" }}
-      />
+      <div className="mb-4" style={{ height: 1, backgroundColor: "var(--border)" }} />
 
       {/* Checklist Steps */}
       <div className="mb-3">
@@ -203,11 +218,8 @@ function StageCard({
         />
         <button
           onClick={handleAddStep}
-          className="shrink-0 p-1.5 rounded-md transition-colors"
-          style={{
-            backgroundColor: "var(--surface3)",
-            color: "var(--text2)",
-          }}
+          className="shrink-0 p-1.5 rounded-md transition-colors hover:brightness-110"
+          style={{ backgroundColor: "var(--surface3)", color: "var(--text2)" }}
           title="Add step"
         >
           <Plus size={14} />
@@ -236,11 +248,7 @@ function StageCard({
             {config.isCloseDateAnchor && (
               <span
                 className="rounded-full"
-                style={{
-                  width: 6,
-                  height: 6,
-                  backgroundColor: "var(--bg)",
-                }}
+                style={{ width: 6, height: 6, backgroundColor: "var(--bg)" }}
               />
             )}
           </span>
@@ -317,6 +325,59 @@ function StepItem({
   );
 }
 
+// ---- CLOSE DATE ANCHOR PANEL ----
+
+function AnchorPanel({ configs }: { configs: StageConfig[] }) {
+  const anchorConfig = configs.find((c) => c.isCloseDateAnchor);
+  if (!anchorConfig) return null;
+
+  const totalPlanDays = configs.reduce((sum, c) => sum + c.targetDays, 0);
+
+  return (
+    <div
+      className="rounded-xl p-4 mb-4"
+      style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
+    >
+      <div className="flex items-center gap-2 mb-2">
+        <Anchor size={14} style={{ color: anchorConfig.color }} />
+        <span className="text-sm font-medium" style={{ color: "var(--text)" }}>
+          Close Date Anchor: <span style={{ color: anchorConfig.color }}>{anchorConfig.label}</span>
+        </span>
+        <span
+          className="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+          style={{
+            backgroundColor: anchorConfig.color + "20",
+            color: anchorConfig.color,
+            fontFamily: "DM Mono, monospace",
+          }}
+        >
+          Stage {anchorConfig.idx}
+        </span>
+      </div>
+      <p className="text-[11px] mb-3" style={{ color: "var(--text2)" }}>
+        When a deal enters this stage, its contract close date is automatically set. The pipeline plan estimates
+        the close date as <strong style={{ color: "var(--text)" }}>entered date + {totalPlanDays} days</strong>.
+      </p>
+
+      {/* Variance flags */}
+      <div className="flex items-center gap-3">
+        <span className="flex items-center gap-1.5 text-[11px]" style={{ color: "var(--red)" }}>
+          <span className="rounded-full shrink-0" style={{ width: 6, height: 6, backgroundColor: "var(--red)" }} />
+          Behind plan — deal exceeded stage target
+        </span>
+        <span className="flex items-center gap-1.5 text-[11px]" style={{ color: "var(--accent)" }}>
+          <span className="rounded-full shrink-0" style={{ width: 6, height: 6, backgroundColor: "var(--accent)" }} />
+          Ahead of plan — deal is moving faster than target
+        </span>
+        <span className="flex items-center gap-1.5 text-[11px]" style={{ color: "var(--text2)" }}>
+          <span className="rounded-full shrink-0" style={{ width: 6, height: 6, backgroundColor: "var(--text2)" }} />
+          On track
+        </span>
+      </div>
+    </div>
+  );
+}
+
 // ---- STAGES PAGE ----
 
 export default function StagesPage() {
@@ -337,7 +398,6 @@ export default function StagesPage() {
     );
   };
 
-  // Wrap handleUpdate for anchor toggles to enforce exclusive selection
   const handleUpdateWithAnchor = (updated: StageConfig) => {
     if (updated.isCloseDateAnchor) {
       handleCloseDateAnchor(updated.key);
@@ -345,10 +405,43 @@ export default function StagesPage() {
     handleUpdate(updated);
   };
 
+  const totalPlanDays = stageConfigs.reduce((sum, c) => sum + c.targetDays, 0);
+
   return (
     <ShellLayout>
       <div className="px-6 pt-4 pb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {/* Stage note banner */}
+        <div
+          className="flex items-center gap-2 px-4 py-2.5 rounded-lg mb-4"
+          style={{
+            backgroundColor: "var(--surface)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          <Info size={14} style={{ color: "var(--accent)" }} />
+          <span className="text-xs" style={{ color: "var(--text2)" }}>
+            Pipeline stages are fixed — you configure what needs to happen inside each one.
+          </span>
+        </div>
+
+        {/* Plan length meta strip */}
+        <div className="flex items-center gap-4 mb-4">
+          <span className="text-[11px]" style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}>
+            PLAN LENGTH
+          </span>
+          <span className="text-sm font-medium" style={{ color: "var(--accent)", fontFamily: "DM Mono, monospace" }}>
+            {totalPlanDays} days
+          </span>
+          <span className="text-[11px]" style={{ color: "var(--text3)" }}>
+            (sum of all stage targets)
+          </span>
+        </div>
+
+        {/* Close date anchor panel */}
+        <AnchorPanel configs={stageConfigs} />
+
+        {/* Stage cards grid — 2 columns on desktop */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {stageConfigs.map((config) => (
             <StageCard
               key={config.key}

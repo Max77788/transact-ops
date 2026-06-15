@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ShellLayout } from "@/components/shell-layout";
 import { cn } from "@/lib/utils";
-import { STAGES, MOCK_DEALS, Deal, StageKey } from "@/lib/data";
+import { STAGES, MOCK_DEALS, Deal, StageKey, StageHistoryEntry } from "@/lib/data";
 import {
   ChevronDown,
   ChevronRight,
@@ -13,6 +13,8 @@ import {
   LayoutGrid,
   List,
   ArrowUpDown,
+  Clock,
+  X,
 } from "lucide-react";
 
 type ViewMode = "board" | "list";
@@ -51,7 +53,6 @@ function BoardView({ deals }: { deals: Deal[] }) {
           className="flex flex-col shrink-0 rounded-lg"
           style={{ width: 210, backgroundColor: "var(--surface)" }}
         >
-          {/* Stage header */}
           <div
             className="flex items-center justify-between px-3 py-2.5 rounded-t-lg"
             style={{ backgroundColor: stage.color + "18" }}
@@ -79,8 +80,6 @@ function BoardView({ deals }: { deals: Deal[] }) {
               {dealsByStage[stage.key].length}
             </span>
           </div>
-
-          {/* Stage cards */}
           <div className="flex-1 overflow-y-auto px-2 py-2 space-y-2">
             {dealsByStage[stage.key].map((deal) => (
               <div
@@ -91,29 +90,17 @@ function BoardView({ deals }: { deals: Deal[] }) {
                   borderLeft: `2px solid ${stage.color}`,
                 }}
               >
-                <p
-                  className="text-xs font-medium truncate mb-0.5"
-                  style={{ color: "var(--text)" }}
-                >
+                <p className="text-xs font-medium truncate mb-0.5" style={{ color: "var(--text)" }}>
                   {deal.address}
                 </p>
-                <p
-                  className="text-[11px] truncate mb-1.5"
-                  style={{ color: "var(--text2)" }}
-                >
+                <p className="text-[11px] truncate mb-1.5" style={{ color: "var(--text2)" }}>
                   {deal.client}
                 </p>
-                <p
-                  className="text-[11px] truncate mb-1.5"
-                  style={{ color: "var(--text3)" }}
-                >
+                <p className="text-[11px] truncate mb-1.5" style={{ color: "var(--text3)" }}>
                   {deal.nextStep}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span
-                    className="text-[10px]"
-                    style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
-                  >
+                  <span className="text-[10px]" style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}>
                     {deal.price}
                   </span>
                   {daysBadge(deal.daysInStage, deal.targetDays)}
@@ -127,12 +114,101 @@ function BoardView({ deals }: { deals: Deal[] }) {
   );
 }
 
+// ---- HISTORY TIMELINE ----
+
+function HistoryTimeline({ history, currentStage }: { history: StageHistoryEntry[]; currentStage: StageKey }) {
+  return (
+    <div className="relative pl-6">
+      {/* Vertical line */}
+      <div
+        className="absolute left-[7px] top-2 bottom-2"
+        style={{ width: 2, backgroundColor: "var(--border)" }}
+      />
+      <div className="space-y-4">
+        {history.map((entry, i) => {
+          const stageColor = STAGES.find((s) => s.key === entry.stageKey)?.color || "#888";
+          const isCurrent = entry.isCurrent;
+          const overTarget = entry.targetDays > 0 && entry.durationDays > entry.targetDays;
+
+          return (
+            <div key={i} className="relative">
+              {/* Dot */}
+              <span
+                className="absolute rounded-full shrink-0"
+                style={{
+                  left: -21,
+                  top: 4,
+                  width: isCurrent ? 12 : 8,
+                  height: isCurrent ? 12 : 8,
+                  backgroundColor: stageColor,
+                  border: isCurrent ? "2px solid var(--accent)" : "none",
+                  boxShadow: isCurrent ? "0 0 6px " + stageColor : "none",
+                }}
+              />
+              {/* Content */}
+              <div className="pb-1">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span
+                    className="text-xs font-medium"
+                    style={{ color: isCurrent ? "var(--accent)" : stageColor }}
+                  >
+                    {entry.stageLabel}
+                  </span>
+                  {isCurrent && (
+                    <span
+                      className="text-[9px] font-medium px-1.5 py-0.5 rounded-full"
+                      style={{
+                        backgroundColor: "var(--accent)",
+                        color: "var(--bg)",
+                        fontFamily: "DM Mono, monospace",
+                      }}
+                    >
+                      NOW
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[11px]" style={{ color: "var(--text3)" }}>
+                    Entered {entry.enteredDate}
+                  </span>
+                  <span
+                    className="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                    style={{
+                      backgroundColor: overTarget ? "var(--red)" + "20" : "var(--accent)" + "20",
+                      color: overTarget ? "var(--red)" : "var(--accent)",
+                      fontFamily: "DM Mono, monospace",
+                    }}
+                  >
+                    {entry.durationDays}d{entry.targetDays > 0 ? ` / ${entry.targetDays}d` : ""}
+                  </span>
+                  <span className="text-[11px]" style={{ color: "var(--text3)" }}>
+                    by {entry.movedBy}
+                  </span>
+                  <span className="text-[10px]" style={{ color: "var(--text3)" }}>
+                    {entry.stepsCompleted}/{entry.totalSteps} steps
+                  </span>
+                </div>
+                {entry.correctionNote && (
+                  <p className="text-[10px] mt-1 italic" style={{ color: "var(--med)" }}>
+                    ⚠ {entry.correctionNote}
+                  </p>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ---- LIST VIEW ----
 
 function ListView({ deals }: { deals: Deal[] }) {
   const [sortKey, setSortKey] = useState<SortKey>("daysInStage");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [expandedTab, setExpandedTab] = useState<"checklist" | "history">("checklist");
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -159,20 +235,17 @@ function ListView({ deals }: { deals: Deal[] }) {
   const stageColor = (key: StageKey) => STAGES.find((s) => s.key === key)?.color || "#888";
 
   const columns: { key: SortKey; label: string; width?: string }[] = [
-    { key: "address", label: "Address", width: "22%" },
-    { key: "client", label: "Client", width: "18%" },
-    { key: "stage", label: "Stage", width: "12%" },
-    { key: "daysInStage", label: "Days", width: "8%" },
-    { key: "nextStep", label: "Next Step", width: "22%" },
-    { key: "closeDate", label: "Close Date", width: "13%" },
+    { key: "address", label: "Address", width: "20%" },
+    { key: "client", label: "Client", width: "16%" },
+    { key: "stage", label: "Stage", width: "11%" },
+    { key: "daysInStage", label: "Days", width: "7%" },
+    { key: "nextStep", label: "Next Step", width: "20%" },
+    { key: "closeDate", label: "Close Date", width: "12%" },
   ];
 
   return (
     <div className="px-6 pt-4 pb-4">
-      <div
-        className="rounded-lg overflow-hidden"
-        style={{ backgroundColor: "var(--surface)" }}
-      >
+      <div className="rounded-lg overflow-hidden" style={{ backgroundColor: "var(--surface)" }}>
         {/* Table header */}
         <div
           className="flex items-center px-4 py-2.5 text-[10px] font-medium uppercase tracking-wider"
@@ -215,9 +288,16 @@ function ListView({ deals }: { deals: Deal[] }) {
                     borderBottom: `1px solid var(--border)`,
                     backgroundColor: isExpanded ? "var(--surface2)" : "transparent",
                   }}
-                  onClick={() => setExpandedId(isExpanded ? null : deal.id)}
+                  onClick={() => {
+                    if (expandedId === deal.id) {
+                      setExpandedId(null);
+                    } else {
+                      setExpandedId(deal.id);
+                      setExpandedTab("checklist");
+                    }
+                  }}
                 >
-                  <div className="flex items-center gap-2" style={{ width: "22%" }}>
+                  <div className="flex items-center gap-2" style={{ width: "20%" }}>
                     {isExpanded ? (
                       <ChevronDown size={14} style={{ color: "var(--text3)" }} />
                     ) : (
@@ -227,27 +307,27 @@ function ListView({ deals }: { deals: Deal[] }) {
                       {deal.address}
                     </span>
                   </div>
-                  <span className="text-sm truncate" style={{ width: "18%", color: "var(--text2)" }}>
+                  <span className="text-sm truncate" style={{ width: "16%", color: "var(--text2)" }}>
                     {deal.client}
                   </span>
-                  <span className="text-xs truncate flex items-center gap-1.5" style={{ width: "12%" }}>
+                  <span className="text-xs truncate flex items-center gap-1.5" style={{ width: "11%" }}>
                     <span className="rounded-full shrink-0" style={{ width: 6, height: 6, backgroundColor: sc }} />
                     <span style={{ color: sc }}>{stageLabel}</span>
                   </span>
                   <span
                     className="text-xs font-medium"
                     style={{
-                      width: "8%",
+                      width: "7%",
                       color: overTarget ? "var(--red)" : "var(--text2)",
                       fontFamily: "DM Mono, monospace",
                     }}
                   >
                     {deal.daysInStage}d
                   </span>
-                  <span className="text-xs truncate" style={{ width: "22%", color: "var(--text3)" }}>
+                  <span className="text-xs truncate" style={{ width: "20%", color: "var(--text3)" }}>
                     {deal.nextStep}
                   </span>
-                  <span className="text-xs" style={{ width: "13%", color: "var(--text2)" }}>
+                  <span className="text-xs" style={{ width: "12%", color: "var(--text2)" }}>
                     {deal.closeDate}
                   </span>
                   <div style={{ width: "5%" }} />
@@ -298,43 +378,72 @@ function ListView({ deals }: { deals: Deal[] }) {
                       ))}
                     </div>
 
-                    {/* Stage checklist */}
-                    <div className="mb-4">
-                      <p
-                        className="text-[10px] font-medium uppercase tracking-wider mb-2"
-                        style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+                    {/* Tabs: Checklist / History */}
+                    <div className="flex items-center gap-1 mb-3">
+                      <button
+                        className={cn(
+                          "text-xs font-medium px-3 py-1.5 rounded-md transition-colors",
+                        )}
+                        style={{
+                          backgroundColor: expandedTab === "checklist" ? "var(--surface3)" : "transparent",
+                          color: expandedTab === "checklist" ? "var(--text)" : "var(--text2)",
+                        }}
+                        onClick={() => setExpandedTab("checklist")}
                       >
-                        Stage Checklist
-                      </p>
-                      <div className="space-y-1.5">
-                        {deal.steps.map((step) => (
-                          <div key={step.id} className="flex items-center gap-2">
-                            {step.done ? (
-                              <CheckCircle2 size={14} style={{ color: "var(--accent)" }} />
-                            ) : (
-                              <Circle size={14} style={{ color: "var(--text3)" }} />
-                            )}
-                            <span
-                              className={cn(
-                                "text-sm",
-                                step.done ? "" : ""
-                              )}
-                              style={{
-                                color: step.done ? "var(--text)" : "var(--text3)",
-                                textDecoration: step.done ? "none" : "none",
-                              }}
-                            >
-                              {step.label}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
+                        Checklist
+                      </button>
+                      <button
+                        className={cn(
+                          "text-xs font-medium px-3 py-1.5 rounded-md transition-colors",
+                        )}
+                        style={{
+                          backgroundColor: expandedTab === "history" ? "var(--surface3)" : "transparent",
+                          color: expandedTab === "history" ? "var(--text)" : "var(--text2)",
+                        }}
+                        onClick={() => setExpandedTab("history")}
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <Clock size={12} />
+                          History
+                        </span>
+                      </button>
                     </div>
+
+                    {/* Tab content */}
+                    {expandedTab === "checklist" && (
+                      <div className="mb-4">
+                        <div className="space-y-1.5">
+                          {deal.steps.map((step) => (
+                            <div key={step.id} className="flex items-center gap-2">
+                              {step.done ? (
+                                <CheckCircle2 size={14} style={{ color: "var(--accent)" }} />
+                              ) : (
+                                <Circle size={14} style={{ color: "var(--text3)" }} />
+                              )}
+                              <span
+                                className="text-sm"
+                                style={{
+                                  color: step.done ? "var(--text)" : "var(--text3)",
+                                }}
+                              >
+                                {step.label}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {expandedTab === "history" && (
+                      <div className="mb-4">
+                        <HistoryTimeline history={deal.stageHistory} currentStage={deal.stage} />
+                      </div>
+                    )}
 
                     {/* Advance button */}
                     <div className="flex items-center gap-2">
                       <button
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors hover:brightness-110"
                         style={{
                           backgroundColor: "var(--accent)",
                           color: "var(--bg)",
@@ -343,10 +452,7 @@ function ListView({ deals }: { deals: Deal[] }) {
                         <ArrowRight size={12} />
                         Advance Deal
                       </button>
-                      <span
-                        className="text-[11px]"
-                        style={{ color: "var(--text3)" }}
-                      >
+                      <span className="text-[11px]" style={{ color: "var(--text3)" }}>
                         Move to next stage
                       </span>
                     </div>
@@ -361,21 +467,254 @@ function ListView({ deals }: { deals: Deal[] }) {
   );
 }
 
+// ---- ADD DEAL MODAL ----
+
+function AddDealModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [address, setAddress] = useState("");
+  const [client, setClient] = useState("");
+  const [agent, setAgent] = useState("");
+  const [stage, setStage] = useState<StageKey>("s0");
+  const [closeDate, setCloseDate] = useState("");
+  const [price, setPrice] = useState("");
+  const [tc, setTc] = useState("");
+
+  if (!open) return null;
+
+  const handleAdd = () => {
+    // In a real app this would call an API
+    onClose();
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+      onClick={onClose}
+    >
+      <div
+        className="rounded-xl p-6 w-full max-w-lg"
+        style={{ backgroundColor: "var(--surface)" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-5">
+          <h3
+            className="text-lg"
+            style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)" }}
+          >
+            Add deal
+          </h3>
+          <button
+            onClick={onClose}
+            className="p-1 rounded-md transition-colors"
+            style={{ color: "var(--text2)" }}
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {/* Property address */}
+          <div>
+            <label
+              className="text-[10px] font-medium uppercase tracking-wider block mb-1.5"
+              style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+            >
+              Property address
+            </label>
+            <input
+              type="text"
+              placeholder="123 Main St"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="w-full px-3 py-2 rounded-md text-sm outline-none"
+              style={{
+                backgroundColor: "var(--surface2)",
+                color: "var(--text)",
+                border: "1px solid var(--border)",
+              }}
+            />
+          </div>
+
+          {/* Client name + Agent (row) */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label
+                className="text-[10px] font-medium uppercase tracking-wider block mb-1.5"
+                style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+              >
+                Client name
+              </label>
+              <input
+                type="text"
+                placeholder="John Smith"
+                value={client}
+                onChange={(e) => setClient(e.target.value)}
+                className="w-full px-3 py-2 rounded-md text-sm outline-none"
+                style={{
+                  backgroundColor: "var(--surface2)",
+                  color: "var(--text)",
+                  border: "1px solid var(--border)",
+                }}
+              />
+            </div>
+            <div>
+              <label
+                className="text-[10px] font-medium uppercase tracking-wider block mb-1.5"
+                style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+              >
+                Agent
+              </label>
+              <input
+                type="text"
+                placeholder="Jessica Torres"
+                value={agent}
+                onChange={(e) => setAgent(e.target.value)}
+                className="w-full px-3 py-2 rounded-md text-sm outline-none"
+                style={{
+                  backgroundColor: "var(--surface2)",
+                  color: "var(--text)",
+                  border: "1px solid var(--border)",
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Stage select + Close date (row) */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label
+                className="text-[10px] font-medium uppercase tracking-wider block mb-1.5"
+                style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+              >
+                Stage
+              </label>
+              <select
+                value={stage}
+                onChange={(e) => setStage(e.target.value as StageKey)}
+                className="w-full px-3 py-2 rounded-md text-sm outline-none"
+                style={{
+                  backgroundColor: "var(--surface2)",
+                  color: "var(--text)",
+                  border: "1px solid var(--border)",
+                  fontFamily: "DM Mono, monospace",
+                }}
+              >
+                {STAGES.map((s) => (
+                  <option key={s.key} value={s.key}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label
+                className="text-[10px] font-medium uppercase tracking-wider block mb-1.5"
+                style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+              >
+                Close date
+              </label>
+              <input
+                type="date"
+                value={closeDate}
+                onChange={(e) => setCloseDate(e.target.value)}
+                className="w-full px-3 py-2 rounded-md text-sm outline-none"
+                style={{
+                  backgroundColor: "var(--surface2)",
+                  color: "var(--text)",
+                  border: "1px solid var(--border)",
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Sale price + TC assigned (row) */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label
+                className="text-[10px] font-medium uppercase tracking-wider block mb-1.5"
+                style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+              >
+                Sale price
+              </label>
+              <input
+                type="text"
+                placeholder="$450,000"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                className="w-full px-3 py-2 rounded-md text-sm outline-none"
+                style={{
+                  backgroundColor: "var(--surface2)",
+                  color: "var(--text)",
+                  border: "1px solid var(--border)",
+                }}
+              />
+            </div>
+            <div>
+              <label
+                className="text-[10px] font-medium uppercase tracking-wider block mb-1.5"
+                style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+              >
+                TC assigned
+              </label>
+              <select
+                value={tc}
+                onChange={(e) => setTc(e.target.value)}
+                className="w-full px-3 py-2 rounded-md text-sm outline-none"
+                style={{
+                  backgroundColor: "var(--surface2)",
+                  color: "var(--text)",
+                  border: "1px solid var(--border)",
+                  fontFamily: "DM Mono, monospace",
+                }}
+              >
+                <option value="">Select TC…</option>
+                <option value="RM">Raj Mehta</option>
+                <option value="PS">Priya Sharma</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Buttons */}
+        <div className="flex items-center justify-end gap-2 mt-6">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-md text-xs font-medium transition-colors"
+            style={{
+              backgroundColor: "var(--surface3)",
+              color: "var(--text2)",
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleAdd}
+            className="px-4 py-2 rounded-md text-xs font-medium transition-colors hover:brightness-110"
+            style={{
+              backgroundColor: "var(--accent)",
+              color: "var(--bg)",
+            }}
+          >
+            Add deal
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ---- PIPELINE PAGE ----
 
 export default function PipelinePage() {
   const [viewMode, setViewMode] = useState<ViewMode>("board");
+  const [showAddModal, setShowAddModal] = useState(false);
 
   return (
-    <ShellLayout>
+    <ShellLayout actionLabel="Add deal" onActionClick={() => setShowAddModal(true)}>
       {/* View toggle */}
-      <div
-        className="flex items-center gap-1 px-6 pt-4 pb-2"
-      >
+      <div className="flex items-center gap-1 px-6 pt-4 pb-2">
         <button
-          className={cn(
-            "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
-          )}
+          className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors")}
           style={{
             backgroundColor: viewMode === "board" ? "var(--surface3)" : "transparent",
             color: viewMode === "board" ? "var(--text)" : "var(--text2)",
@@ -386,9 +725,7 @@ export default function PipelinePage() {
           Board
         </button>
         <button
-          className={cn(
-            "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
-          )}
+          className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors")}
           style={{
             backgroundColor: viewMode === "list" ? "var(--surface3)" : "transparent",
             color: viewMode === "list" ? "var(--text)" : "var(--text2)",
@@ -400,11 +737,10 @@ export default function PipelinePage() {
         </button>
       </div>
 
-      {viewMode === "board" ? (
-        <BoardView deals={MOCK_DEALS} />
-      ) : (
-        <ListView deals={MOCK_DEALS} />
-      )}
+      {viewMode === "board" ? <BoardView deals={MOCK_DEALS} /> : <ListView deals={MOCK_DEALS} />}
+
+      {/* Add Deal Modal */}
+      <AddDealModal open={showAddModal} onClose={() => setShowAddModal(false)} />
     </ShellLayout>
   );
 }

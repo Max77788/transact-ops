@@ -25,6 +25,19 @@ export interface StageStep {
   done: boolean;
 }
 
+export interface StageHistoryEntry {
+  stageKey: StageKey;
+  stageLabel: string;
+  enteredDate: string;
+  durationDays: number;
+  targetDays: number;
+  movedBy: string;
+  stepsCompleted: number;
+  totalSteps: number;
+  correctionNote?: string;
+  isCurrent: boolean;
+}
+
 export interface Deal {
   id: string;
   address: string;
@@ -39,6 +52,7 @@ export interface Deal {
   stageEntered: string;
   targetDays: number;
   steps: StageStep[];
+  stageHistory: StageHistoryEntry[];
 }
 
 export const STAGES: StageDef[] = [
@@ -50,6 +64,21 @@ export const STAGES: StageDef[] = [
   { key: "s5", label: "Post-Close", color: "#c8f064", targetDays: 14 },
   { key: "s6", label: "Complete", color: "#64f0c8", targetDays: 0 },
 ];
+
+function mkHistory(
+  stageKey: StageKey,
+  stageLabel: string,
+  enteredDate: string,
+  durationDays: number,
+  targetDays: number,
+  movedBy: string,
+  stepsCompleted: number,
+  totalSteps: number,
+  isCurrent: boolean,
+  correctionNote?: string,
+): StageHistoryEntry {
+  return { stageKey, stageLabel, enteredDate, durationDays, targetDays, movedBy, stepsCompleted, totalSteps, correctionNote, isCurrent };
+}
 
 export const MOCK_DEALS: Deal[] = [
   {
@@ -71,6 +100,9 @@ export const MOCK_DEALS: Deal[] = [
       { id: "st3", label: "Property criteria defined", done: false },
       { id: "st4", label: "Send disclosure packet", done: false },
     ],
+    stageHistory: [
+      mkHistory("s0", "Lead", "2026-06-12", 3, 7, "JT", 2, 4, true),
+    ],
   },
   {
     id: "d2",
@@ -90,6 +122,10 @@ export const MOCK_DEALS: Deal[] = [
       { id: "st2", label: "Photos uploaded", done: true },
       { id: "st3", label: "First open house held", done: true },
       { id: "st4", label: "Schedule second showing", done: false },
+    ],
+    stageHistory: [
+      mkHistory("s0", "Lead", "2026-06-03", 7, 7, "MW", 4, 4, false),
+      mkHistory("s1", "Showing", "2026-06-10", 5, 14, "MW", 3, 4, true),
     ],
   },
   {
@@ -111,6 +147,11 @@ export const MOCK_DEALS: Deal[] = [
       { id: "st3", label: "Counter-offer prepared", done: false },
       { id: "st4", label: "Attorney review", done: false },
     ],
+    stageHistory: [
+      mkHistory("s0", "Lead", "2026-05-30", 5, 7, "JT", 4, 4, false),
+      mkHistory("s1", "Showing", "2026-06-04", 3, 14, "JT", 3, 4, false),
+      mkHistory("s2", "Offer", "2026-06-07", 8, 10, "JT", 2, 4, true),
+    ],
   },
   {
     id: "d4",
@@ -130,6 +171,11 @@ export const MOCK_DEALS: Deal[] = [
       { id: "st2", label: "Earnest money deposited", done: true },
       { id: "st3", label: "Purchase agreement drafted", done: false },
       { id: "st4", label: "Finalize purchase agreement", done: false },
+    ],
+    stageHistory: [
+      mkHistory("s0", "Lead", "2026-05-20", 8, 7, "LC", 4, 4, false),
+      mkHistory("s1", "Showing", "2026-05-28", 6, 14, "LC", 4, 4, false, "Stage corrected — buyer delayed inspection"),
+      mkHistory("s2", "Offer", "2026-06-03", 12, 10, "LC", 2, 4, true),
     ],
   },
   {
@@ -151,6 +197,12 @@ export const MOCK_DEALS: Deal[] = [
       { id: "st3", label: "Review inspection report", done: false },
       { id: "st4", label: "Negotiate repairs", done: false },
     ],
+    stageHistory: [
+      mkHistory("s0", "Lead", "2026-05-15", 3, 7, "MW", 4, 4, false),
+      mkHistory("s1", "Showing", "2026-05-18", 10, 14, "MW", 4, 4, false),
+      mkHistory("s2", "Offer", "2026-05-28", 12, 10, "MW", 3, 4, false),
+      mkHistory("s3", "Inspection", "2026-06-09", 6, 14, "MW", 2, 4, true),
+    ],
   },
   {
     id: "d6",
@@ -170,6 +222,12 @@ export const MOCK_DEALS: Deal[] = [
       { id: "st2", label: "Appraisal ordered", done: true },
       { id: "st3", label: "Repair list compiled", done: true },
       { id: "st4", label: "Negotiate repair credits", done: false },
+    ],
+    stageHistory: [
+      mkHistory("s0", "Lead", "2026-05-01", 4, 7, "JT", 4, 4, false),
+      mkHistory("s1", "Showing", "2026-05-05", 12, 14, "JT", 4, 4, false),
+      mkHistory("s2", "Offer", "2026-05-17", 13, 10, "JT", 3, 4, false, "Appraisal delay pushed closing"),
+      mkHistory("s3", "Inspection", "2026-05-30", 16, 14, "JT", 3, 4, true),
     ],
   },
   {
@@ -191,6 +249,13 @@ export const MOCK_DEALS: Deal[] = [
       { id: "st3", label: "Closing docs prepared", done: true },
       { id: "st4", label: "Final walkthrough", done: false },
     ],
+    stageHistory: [
+      mkHistory("s0", "Lead", "2026-04-20", 5, 7, "LC", 4, 4, false),
+      mkHistory("s1", "Showing", "2026-04-25", 8, 14, "LC", 4, 4, false),
+      mkHistory("s2", "Offer", "2026-05-03", 9, 10, "LC", 4, 4, false),
+      mkHistory("s3", "Inspection", "2026-05-12", 12, 14, "LC", 4, 4, false),
+      mkHistory("s4", "Closing", "2026-05-24", 22, 30, "LC", 3, 4, true),
+    ],
   },
   {
     id: "d8",
@@ -210,6 +275,13 @@ export const MOCK_DEALS: Deal[] = [
       { id: "st2", label: "Final underwriting done", done: true },
       { id: "st3", label: "Closing scheduled", done: true },
       { id: "st4", label: "Sign closing documents", done: false },
+    ],
+    stageHistory: [
+      mkHistory("s0", "Lead", "2026-04-01", 6, 7, "MW", 4, 4, false),
+      mkHistory("s1", "Showing", "2026-04-07", 10, 14, "MW", 4, 4, false),
+      mkHistory("s2", "Offer", "2026-04-17", 10, 10, "MW", 4, 4, false),
+      mkHistory("s3", "Inspection", "2026-04-27", 13, 14, "MW", 3, 4, false),
+      mkHistory("s4", "Closing", "2026-05-10", 35, 30, "MW", 3, 4, true),
     ],
   },
   {
@@ -231,6 +303,14 @@ export const MOCK_DEALS: Deal[] = [
       { id: "st3", label: "Send thank-you gift", done: false },
       { id: "st4", label: "Request testimonial", done: false },
     ],
+    stageHistory: [
+      mkHistory("s0", "Lead", "2026-04-10", 4, 7, "JT", 4, 4, false),
+      mkHistory("s1", "Showing", "2026-04-14", 7, 14, "JT", 4, 4, false),
+      mkHistory("s2", "Offer", "2026-04-21", 8, 10, "JT", 4, 4, false),
+      mkHistory("s3", "Inspection", "2026-04-29", 11, 14, "JT", 4, 4, false),
+      mkHistory("s4", "Closing", "2026-05-10", 32, 30, "JT", 4, 4, false),
+      mkHistory("s5", "Post-Close", "2026-06-11", 4, 14, "JT", 2, 4, true),
+    ],
   },
   {
     id: "d10",
@@ -249,6 +329,15 @@ export const MOCK_DEALS: Deal[] = [
       { id: "st1", label: "All docs archived", done: true },
       { id: "st2", label: "Testimonial received", done: true },
       { id: "st3", label: "Referral requested", done: true },
+    ],
+    stageHistory: [
+      mkHistory("s0", "Lead", "2026-03-01", 5, 7, "LC", 4, 4, false),
+      mkHistory("s1", "Showing", "2026-03-06", 8, 14, "LC", 4, 4, false),
+      mkHistory("s2", "Offer", "2026-03-14", 9, 10, "LC", 4, 4, false),
+      mkHistory("s3", "Inspection", "2026-03-23", 10, 14, "LC", 4, 4, false),
+      mkHistory("s4", "Closing", "2026-04-02", 28, 30, "LC", 4, 4, false),
+      mkHistory("s5", "Post-Close", "2026-04-30", 15, 14, "LC", 3, 4, false),
+      mkHistory("s6", "Complete", "2026-05-15", 30, 0, "LC", 3, 3, true),
     ],
   },
 ];
@@ -713,6 +802,7 @@ export interface TeamMember {
   tasksDue: number;
   checkinsThisWeek: number;
   atRiskDeals: AtRiskDeal[];
+  active: boolean;
 }
 
 export const ROLE_COLORS: Record<TeamRole, string> = {
@@ -739,6 +829,7 @@ export const MOCK_TEAM: TeamMember[] = [
       { id: "d7", address: "1200 Cedar Crest Ct" },
       { id: "d8", address: "33 Sunset Blvd" },
     ],
+    active: true,
   },
   {
     id: "t2",
@@ -754,6 +845,7 @@ export const MOCK_TEAM: TeamMember[] = [
     atRiskDeals: [
       { id: "d6", address: "550 Maple Avenue" },
     ],
+    active: true,
   },
   {
     id: "t3",
@@ -767,6 +859,7 @@ export const MOCK_TEAM: TeamMember[] = [
     tasksDue: 1,
     checkinsThisWeek: 5,
     atRiskDeals: [],
+    active: true,
   },
   {
     id: "t4",
@@ -782,6 +875,7 @@ export const MOCK_TEAM: TeamMember[] = [
     atRiskDeals: [
       { id: "d5", address: "88 Harbor View Ln" },
     ],
+    active: true,
   },
 ];
 

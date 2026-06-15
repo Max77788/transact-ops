@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 
 interface ShellLayoutProps {
   children: React.ReactNode;
+  actionLabel?: string;
+  onActionClick?: () => void;
 }
 
 const pageMeta: Record<string, { title: string; stats: { label: string; value: string }[] }> = {
@@ -67,7 +69,7 @@ const pageMeta: Record<string, { title: string; stats: { label: string; value: s
   },
 };
 
-export function ShellLayout({ children }: ShellLayoutProps) {
+export function ShellLayout({ children, actionLabel, onActionClick }: ShellLayoutProps) {
   const pathname = usePathname();
   const meta = pageMeta[pathname] || { title: "TransactOps", stats: [] };
 
@@ -78,7 +80,7 @@ export function ShellLayout({ children }: ShellLayoutProps) {
         className="flex flex-col flex-1 min-w-0"
         style={{ marginLeft: "var(--sidebar-w)" }}
       >
-        <Topbar title={meta.title} stats={meta.stats} />
+        <Topbar title={meta.title} stats={meta.stats} actionLabel={actionLabel} onActionClick={onActionClick} />
         <main className="flex-1 overflow-auto">{children}</main>
       </div>
     </div>

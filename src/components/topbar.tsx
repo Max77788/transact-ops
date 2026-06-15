@@ -10,9 +10,11 @@ interface MetaStat {
 interface TopbarProps {
   title: string;
   stats?: MetaStat[];
+  actionLabel?: string;
+  onActionClick?: () => void;
 }
 
-export function Topbar({ title, stats = [] }: TopbarProps) {
+export function Topbar({ title, stats = [], actionLabel, onActionClick }: TopbarProps) {
   return (
     <header
       className="sticky top-0 z-20 flex items-center justify-between px-6"
@@ -63,16 +65,19 @@ export function Topbar({ title, stats = [] }: TopbarProps) {
 
       {/* Right: Actions */}
       <div className="flex items-center gap-2">
-        <button
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
-          style={{
-            backgroundColor: "var(--accent)",
-            color: "var(--bg)",
-          }}
-        >
-          <Plus size={14} />
-          Add Deal
-        </button>
+        {actionLabel && onActionClick && (
+          <button
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors hover:brightness-110"
+            style={{
+              backgroundColor: "var(--accent)",
+              color: "var(--bg)",
+            }}
+            onClick={onActionClick}
+          >
+            <Plus size={14} />
+            {actionLabel}
+          </button>
+        )}
         <button
           className="p-1.5 rounded-md transition-colors"
           style={{ color: "var(--text2)" }}
