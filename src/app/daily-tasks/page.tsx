@@ -433,7 +433,7 @@ export default function DailyTasksPage() {
 
   // On mount, try to fetch tasks from API; fall back to mock
   useEffect(() => {
-    fetch("/api/tasks", { headers: { "x-org-id": "00000000-0000-0000-0000-000000000001" } })
+    fetch("/api/tasks", { headers: { "x-org-id": "d1000000-0000-0000-0000-000000000001" } })
       .then((r) => r.json())
       .then((d) => {
         if (d.data?.length) {

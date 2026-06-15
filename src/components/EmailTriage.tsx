@@ -80,7 +80,7 @@ export default function EmailTriage() {
     try {
       const r = await fetch("/api/email/scan", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-org-id": "00000000-0000-0000-0000-000000000001" },
+        headers: { "Content-Type": "application/json", "x-org-id": "d1000000-0000-0000-0000-000000000001" },
         body: JSON.stringify({}),
       });
       const d = await r.json();
@@ -104,7 +104,7 @@ export default function EmailTriage() {
     try {
       const r = await fetch("/api/email/scan", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-org-id": "00000000-0000-0000-0000-000000000001" },
+        headers: { "Content-Type": "application/json", "x-org-id": "d1000000-0000-0000-0000-000000000001" },
         body: JSON.stringify({}),
       });
       const d = await r.json();

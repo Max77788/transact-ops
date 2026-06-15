@@ -712,7 +712,7 @@ export default function PipelinePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/deals", { headers: { "x-org-id": "00000000-0000-0000-0000-000000000001" } })
+    fetch("/api/deals", { headers: { "x-org-id": "d1000000-0000-0000-0000-000000000001" } })
       .then((r) => r.json())
       .then((d) => { if (d.data) setDeals(d.data); })
       .catch(() => {})

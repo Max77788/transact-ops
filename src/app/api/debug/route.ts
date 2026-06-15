@@ -4,7 +4,7 @@ import { getDeals } from "@/lib/queries";
 
 export async function GET() {
   try {
-    const orgId = "00000000-0000-0000-0000-000000000001";
+    const orgId = "d1000000-0000-0000-0000-000000000001";
     const deals = await getDeals(orgId);
     return NextResponse.json({
       ok: true,
