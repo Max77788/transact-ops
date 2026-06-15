@@ -19,6 +19,10 @@
   --green: #4ade80;
   --lime: #c8f064;
   --red: #ff6b6b;
+  --gen: #64f0c8;
+  --mon: #b088ff;
+  --wed: #64c8f0;
+  --call: #f0c864;
 
   /* stage colors */
   --s0: #9b8aff;
@@ -53,6 +57,10 @@
   --color-green: var(--green);
   --color-lime: var(--lime);
   --color-red: var(--red);
+  --color-gen: var(--gen);
+  --color-mon: var(--mon);
+  --color-wed: var(--wed);
+  --color-call: var(--call);
   --color-s0: var(--s0);
   --color-s1: var(--s1);
   --color-s2: var(--s2);

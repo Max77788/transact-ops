@@ -18,6 +18,7 @@ import {
   X,
   RotateCcw,
   Send,
+  Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { mockOwners, mockCalendarEvents } from "@/lib/mock-data";
@@ -29,33 +30,38 @@ import type {
   ActionItem,
 } from "@/lib/types";
 
+// ---- Status config with border colors ----
 const statusConfig: Record<
   OwnerStatus,
-  { color: string; bg: string; dot: string; label: string }
+  { color: string; bg: string; dot: string; label: string; borderColor: string }
 > = {
   awaiting: {
-    color: "var(--purple)",
-    bg: "rgba(176,136,255,0.12)",
-    dot: "bg-[var(--purple)]",
-    label: "Awaiting",
+    color: "#f0c864",
+    bg: "rgba(240,200,100,0.12)",
+    dot: "#f0c864",
+    label: "Awaiting booking",
+    borderColor: "#f0c864",
   },
   scheduled: {
-    color: "var(--low)",
+    color: "#64c8f0",
     bg: "rgba(100,200,240,0.12)",
-    dot: "bg-[var(--low)]",
+    dot: "#64c8f0",
     label: "Scheduled",
+    borderColor: "#64c8f0",
   },
   completed: {
-    color: "var(--green)",
-    bg: "rgba(74,222,128,0.12)",
-    dot: "bg-[var(--green)]",
+    color: "#64f0c8",
+    bg: "rgba(100,240,200,0.12)",
+    dot: "#64f0c8",
     label: "Completed",
+    borderColor: "#64f0c8",
   },
   noshow: {
-    color: "var(--high)",
-    bg: "rgba(255,107,107,0.12)",
-    dot: "bg-[var(--high)]",
-    label: "No Show",
+    color: "#ffa040",
+    bg: "rgba(255,160,64,0.12)",
+    dot: "#ffa040",
+    label: "No-show",
+    borderColor: "#ffa040",
   },
 };
 
@@ -66,27 +72,25 @@ const sentimentConfig: Record<Sentiment, { emoji: string; label: string }> = {
 };
 
 // ---- Calendar Helper ----
-
 const MONTHS = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
 ];
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function getDaysInMonth(year: number, month: number): number {
   return new Date(year, month + 1, 0).getDate();
 }
 
 function getFirstDayOfMonth(year: number, month: number): number {
-  const first = new Date(year, month, 1).getDay();
-  return first === 0 ? 6 : first - 1; // Monday = 0
+  return new Date(year, month, 1).getDay(); // 0 = Sunday
 }
 
 export default function OwnerCheckins() {
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth());
-  const [selectedDay, setSelectedDay] = useState<string | null>(null); // YYYY-MM-DD
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
@@ -99,13 +103,21 @@ export default function OwnerCheckins() {
     return days;
   }, [firstDay, daysInMonth]);
 
-  // Events map by date
+  // Build a map from date -> { time, firstName }[] for event chips
   const eventsByDate = useMemo(() => {
-    const map: Record<string, string[]> = {};
+    const map: Record<string, { time: string; firstName: string; ownerId: string }[]> = {};
     mockCalendarEvents.forEach((ev) => {
       if (!map[ev.date]) map[ev.date] = [];
       ev.ownerIds.forEach((id) => {
-        if (!map[ev.date].includes(id)) map[ev.date].push(id);
+        const owner = mockOwners.find((o) => o.id === id);
+        if (owner) {
+          const firstName = owner.name.split(" ")[0].replace("&", "").trim();
+          map[ev.date].push({
+            time: owner.callTime || "",
+            firstName: firstName,
+            ownerId: id,
+          });
+        }
       });
     });
     return map;
@@ -115,17 +127,15 @@ export default function OwnerCheckins() {
   const filteredOwners = useMemo(() => {
     const owners = [...mockOwners];
     if (selectedDay) {
-      const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(
-        selectedDay.split("-")[2]
-      ).padStart(2, "0")}`;
-      const ownerIds = eventsByDate[dateKey] || [];
+      const events = eventsByDate[selectedDay] || [];
+      const ownerIds = events.map((e) => e.ownerId);
       if (ownerIds.length > 0) {
         return owners.filter((o) => ownerIds.includes(o.id));
       }
       return [];
     }
     return owners;
-  }, [selectedDay, year, month, eventsByDate]);
+  }, [selectedDay, eventsByDate]);
 
   // Group owners by status
   const grouped = useMemo(() => {
@@ -140,6 +150,18 @@ export default function OwnerCheckins() {
     });
     return groups;
   }, [filteredOwners]);
+
+  // Progress bar: completed calls / total calls with status
+  const totalCalls = mockOwners.filter((o) =>
+    ["completed", "noshow", "scheduled"].includes(o.status)
+  ).length;
+  const completedCalls = mockOwners.filter(
+    (o) => o.status === "completed"
+  ).length;
+  const completionPct = totalCalls > 0 ? Math.round((completedCalls / totalCalls) * 100) : 0;
+
+  // Total scheduled count for calendar header
+  const totalScheduled = mockCalendarEvents.length;
 
   const prevMonth = () => {
     if (month === 0) {
@@ -178,8 +200,44 @@ export default function OwnerCheckins() {
     setSelectedDay(key);
   };
 
+  const clearFilter = () => setSelectedDay(null);
+
+  // Format selected date for display
+  const formattedSelectedDate = useMemo(() => {
+    if (!selectedDay) return null;
+    const [y, m, d] = selectedDay.split("-");
+    const monthName = MONTHS[parseInt(m) - 1];
+    return `${monthName} ${parseInt(d)}, ${y}`;
+  }, [selectedDay]);
+
+  const groupOrder: { key: OwnerStatus; dotColor: string; title: string }[] = [
+    { key: "awaiting", dotColor: "#f0c864", title: "Awaiting booking" },
+    { key: "scheduled", dotColor: "#64c8f0", title: "Scheduled" },
+    { key: "completed", dotColor: "#64f0c8", title: "Completed" },
+    { key: "noshow", dotColor: "#ffa040", title: "No-show" },
+  ];
+
   return (
     <div className="flex flex-col h-full">
+      {/* Progress bar */}
+      <div
+        className="px-6"
+        style={{
+          height: "3px",
+          backgroundColor: "var(--border)",
+        }}
+      >
+        <div
+          style={{
+            height: "100%",
+            width: `${completionPct}%`,
+            backgroundColor: "#f0c864",
+            transition: "width 0.5s ease",
+            borderRadius: "0 2px 2px 0",
+          }}
+        />
+      </div>
+
       {/* Calendar */}
       <div className="px-6 pt-4 pb-3 border-b border-[var(--border)]">
         {/* Month nav */}
@@ -190,12 +248,20 @@ export default function OwnerCheckins() {
           >
             <ChevronLeft size={18} />
           </button>
-          <h3
-            className="font-serif text-lg text-[var(--text)] tracking-tight"
-            style={{ fontFamily: "Instrument Serif, serif" }}
-          >
-            {MONTHS[month]} {year}
-          </h3>
+          <div className="text-center">
+            <h3
+              className="font-serif text-lg text-[var(--text)] tracking-tight leading-tight"
+              style={{ fontFamily: "Instrument Serif, serif", fontSize: "18px" }}
+            >
+              {MONTHS[month]} {year}
+            </h3>
+            <p
+              className="text-[10px]"
+              style={{ fontFamily: "DM Mono, monospace", color: "var(--text3)" }}
+            >
+              {totalScheduled} scheduled · click a day to filter
+            </p>
+          </div>
           <button
             onClick={nextMonth}
             className="p-1 rounded text-[var(--text3)] hover:text-[var(--text)] hover:bg-[var(--surface)] transition-all"
@@ -209,8 +275,8 @@ export default function OwnerCheckins() {
           {DAYS.map((d) => (
             <div
               key={d}
-              className="text-center text-[10px] font-medium text-[var(--text3)] uppercase tracking-wider py-1"
-              style={{ fontFamily: "DM Mono, monospace" }}
+              className="text-center py-1 text-[var(--text3)] uppercase tracking-wider"
+              style={{ fontSize: "9px", fontFamily: "DM Mono, monospace" }}
             >
               {d}
             </div>
@@ -221,7 +287,13 @@ export default function OwnerCheckins() {
         <div className="grid grid-cols-7 gap-1">
           {calendarDays.map((d, i) => {
             if (d === null) {
-              return <div key={`empty-${i}`} className="aspect-square" />;
+              return (
+                <div
+                  key={`empty-${i}`}
+                  className="rounded-md"
+                  style={{ minHeight: "70px", backgroundColor: "var(--surface)" }}
+                />
+              );
             }
             const key = dateKey(d);
             const events = eventsByDate[key] || [];
@@ -233,86 +305,160 @@ export default function OwnerCheckins() {
                 key={key}
                 onClick={() => handleDayClick(d)}
                 className={cn(
-                  "aspect-square flex flex-col items-center justify-center rounded-lg text-xs transition-all relative",
+                  "flex flex-col items-start rounded-md text-xs transition-all p-1",
                   selected
-                    ? "bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/30"
+                    ? ""
                     : today
-                    ? "bg-[var(--surface)] ring-1 ring-[var(--accent)]/20"
+                    ? ""
                     : "hover:bg-[var(--surface)]"
                 )}
+                style={{
+                  minHeight: "70px",
+                  backgroundColor: selected
+                    ? "rgba(240,200,100,0.15)"
+                    : today
+                    ? "var(--surface2)"
+                    : "var(--surface)",
+                  border: selected
+                    ? "1px solid rgba(240,200,100,0.4)"
+                    : today
+                    ? "1px solid rgba(240,200,100,0.5)"
+                    : "1px solid var(--border)",
+                }}
               >
                 <span
                   className={cn(
-                    "text-xs",
-                    today ? "text-[var(--accent)] font-bold" : "text-[var(--text2)]"
+                    "text-xs font-medium",
+                    today ? "text-[#f0c864]" : "text-[var(--text2)]"
                   )}
                   style={today ? { fontFamily: "DM Sans, sans-serif" } : {}}
                 >
                   {d}
                 </span>
-                {events.length > 0 && (
-                  <div className="flex gap-0.5 mt-0.5">
-                    {events.slice(0, 3).map((_, ei) => (
-                      <div
-                        key={ei}
-                        className="w-1.5 h-1.5 rounded-full"
-                        style={{
-                          backgroundColor:
-                            ei === 0
-                              ? "var(--purple)"
-                              : ei === 1
-                              ? "var(--low)"
-                              : "var(--accent)",
-                        }}
-                      />
-                    ))}
-                  </div>
-                )}
+                {/* Event chips */}
+                <div className="flex flex-col gap-0.5 mt-1 w-full overflow-hidden">
+                  {events.slice(0, 3).map((ev, ei) => (
+                    <div
+                      key={ei}
+                      className="truncate rounded-sm px-1 py-px"
+                      style={{
+                        fontSize: "9px",
+                        fontFamily: "DM Mono, monospace",
+                        backgroundColor: "rgba(100,200,240,0.18)",
+                        color: "var(--low)",
+                        lineHeight: "1.4",
+                      }}
+                    >
+                      {ev.time ? `${ev.time.replace(" AM","").replace(" PM","")} ` : ""}
+                      {ev.firstName}
+                    </div>
+                  ))}
+                  {events.length > 3 && (
+                    <span
+                      style={{
+                        fontSize: "9px",
+                        fontFamily: "DM Mono, monospace",
+                        color: "var(--text3)",
+                      }}
+                    >
+                      +{events.length - 3} more
+                    </span>
+                  )}
+                </div>
               </button>
             );
           })}
         </div>
       </div>
 
+      {/* Date filter bar */}
+      <div
+        className="px-6 py-2 flex items-center gap-3 border-b border-[var(--border)]"
+        style={{ backgroundColor: "var(--surface2)" }}
+      >
+        {selectedDay ? (
+          <>
+            <span
+              className="text-xs"
+              style={{ color: "var(--text2)", fontFamily: "DM Sans, sans-serif" }}
+            >
+              Showing{" "}
+              <strong style={{ color: "var(--text)" }}>
+                {formattedSelectedDate}
+              </strong>{" "}
+              · {filteredOwners.length} booking{filteredOwners.length !== 1 ? "s" : ""}
+            </span>
+            <button
+              onClick={clearFilter}
+              className="flex items-center gap-1 text-xs transition-colors hover:opacity-80"
+              style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+            >
+              ← Clear filter
+            </button>
+          </>
+        ) : (
+          <span
+            className="text-xs"
+            style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+          >
+            Showing all check-ins
+          </span>
+        )}
+      </div>
+
       {/* Detail list */}
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
         {selectedDay && filteredOwners.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-16 text-[var(--text3)]">
-            <Calendar size={28} className="mb-3 opacity-50" />
-            <span className="text-sm">No check-ins on this day</span>
+          <div className="flex flex-col items-center justify-center py-16">
+            <Calendar size={28} className="mb-3 opacity-50" style={{ color: "var(--text3)" }} />
+            <span className="text-sm" style={{ color: "var(--text3)" }}>No check-ins on this day</span>
           </div>
         )}
 
         {!selectedDay && filteredOwners.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 text-[var(--text3)]">
-            <Calendar size={32} className="mb-3 opacity-50" />
-            <span className="text-sm">Select a day to view check-ins</span>
+          <div className="flex flex-col items-center justify-center py-20">
+            <Calendar size={32} className="mb-3 opacity-50" style={{ color: "var(--text3)" }} />
+            <span className="text-sm" style={{ color: "var(--text3)" }}>
+              Select a day to view check-ins
+            </span>
           </div>
         )}
 
         {/* Grouped by status */}
-        {(Object.keys(grouped) as OwnerStatus[]).map((status) => {
-          const owners = grouped[status];
+        {groupOrder.map(({ key, dotColor, title }) => {
+          const owners = grouped[key];
           if (owners.length === 0) return null;
-          const cfg = statusConfig[status];
 
           return (
-            <div key={status}>
+            <div key={key}>
               {/* Section header */}
               <div className="flex items-center gap-2 mb-3">
-                <div className={cn("w-2.5 h-2.5 rounded-full", cfg.dot)} />
+                {/* Colored dot */}
+                <span
+                  className="shrink-0 rounded-full"
+                  style={{
+                    width: 8,
+                    height: 8,
+                    backgroundColor: dotColor,
+                  }}
+                />
                 <span
                   className="text-xs font-medium uppercase tracking-wider"
-                  style={{ color: cfg.color }}
+                  style={{ color: dotColor, fontFamily: "DM Mono, monospace" }}
                 >
-                  {cfg.label}
+                  {title}
                 </span>
                 <span
-                  className="text-[11px] font-mono"
-                  style={{ color: "var(--text3)" }}
+                  className="text-[11px]"
+                  style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
                 >
                   {owners.length}
                 </span>
+                {/* Line after count */}
+                <div
+                  className="flex-1"
+                  style={{ height: "1px", backgroundColor: "var(--border)" }}
+                />
               </div>
 
               {/* Owner cards */}
@@ -338,8 +484,9 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
   const [mergedSummary, setMergedSummary] = useState("");
   const [showHistory, setShowHistory] = useState(false);
   const [agendaItems, setAgendaItems] = useState(owner.agendaItems);
-  const [actionItems] = useState(owner.actionItems);
+  const [actionItems, setActionItems] = useState(owner.actionItems);
   const [status, setStatus] = useState<OwnerStatus>(owner.status);
+  const [newTask, setNewTask] = useState("");
 
   const scfg = statusConfig[status];
 
@@ -349,8 +496,13 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
     );
   };
 
+  const toggleAction = (id: string) => {
+    setActionItems((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, done: !a.done } : a))
+    );
+  };
+
   const handleMerge = () => {
-    // Simulate AI merging raw notes into summary
     setMergedSummary(
       `Combined summary: Call with ${owner.name} (${
         owner.address
@@ -362,10 +514,27 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
     );
   };
 
+  const handleAddTask = () => {
+    if (!newTask.trim()) return;
+    const newId = `ft-${Date.now()}`;
+    setActionItems((prev) => [
+      ...prev,
+      { id: newId, text: newTask.trim(), done: false },
+    ]);
+    setNewTask("");
+  };
+
   const completedAgenda = agendaItems.filter((a) => a.done).length;
 
   return (
-    <div className="rounded-xl bg-[var(--surface)] border border-[var(--border)] overflow-hidden">
+    <div
+      className="rounded-xl overflow-hidden"
+      style={{
+        backgroundColor: "var(--surface)",
+        border: "1px solid var(--border)",
+        borderLeft: `3px solid ${scfg.borderColor}`,
+      }}
+    >
       {/* Card head */}
       <button
         onClick={() => setExpanded(!expanded)}
@@ -375,27 +544,30 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1 flex-wrap">
               <h3
-                className="font-serif text-[15px] text-[var(--text)]"
-                style={{ fontFamily: "Instrument Serif, serif", fontSize: "15px" }}
+                className="font-serif text-[15px]"
+                style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)" }}
               >
                 {owner.name}
               </h3>
               <span
-                className="px-2 py-0.5 rounded text-[10px] font-medium font-mono"
+                className="px-2 py-0.5 rounded text-[10px] font-medium"
                 style={{
-                  backgroundColor: owner.dealType === "Sale"
-                    ? "rgba(200,240,100,0.12)"
-                    : "rgba(100,200,240,0.12)",
-                  color: owner.dealType === "Sale" ? "var(--accent)" : "var(--low)",
+                  backgroundColor:
+                    owner.dealType === "Sale"
+                      ? "rgba(200,240,100,0.12)"
+                      : "rgba(100,200,240,0.12)",
+                  color:
+                    owner.dealType === "Sale" ? "var(--accent)" : "var(--low)",
                   fontFamily: "DM Mono, monospace",
                 }}
               >
                 {owner.dealType}
               </span>
               <span
-                className="px-2 py-0.5 rounded text-[10px] font-medium font-mono text-[var(--text2)]"
+                className="px-2 py-0.5 rounded text-[10px] font-medium"
                 style={{
                   backgroundColor: "var(--surface2)",
+                  color: "var(--text2)",
                   fontFamily: "DM Mono, monospace",
                 }}
               >
@@ -403,7 +575,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
               </span>
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-[var(--text2)] flex-wrap">
+            <div className="flex items-center gap-3 text-xs flex-wrap" style={{ color: "var(--text2)" }}>
               <span className="flex items-center gap-1">
                 <MapPin size={10} />
                 {owner.address.split(",")[0]}
@@ -418,13 +590,33 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
               </span>
             </div>
 
-            {/* Reminder badge */}
-            {owner.reminderDays > 0 && status === "awaiting" && (
+            {/* Reminder pill — for scheduled calls */}
+            {status === "scheduled" && owner.reminderDays > 0 && (
               <div
-                className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded text-[11px] font-medium"
+                className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full text-[11px] font-medium"
+                style={{
+                  backgroundColor:
+                    owner.reminderDays < 2
+                      ? "rgba(255,107,107,0.15)"
+                      : "rgba(255,160,64,0.12)",
+                  color:
+                    owner.reminderDays < 2 ? "var(--high)" : "var(--med)",
+                  fontFamily: "DM Mono, monospace",
+                }}
+              >
+                <Clock size={10} />
+                Reminder in {owner.reminderDays} day{owner.reminderDays !== 1 ? "s" : ""}
+              </div>
+            )}
+
+            {/* Reminder pill — for awaiting */}
+            {status === "awaiting" && owner.reminderDays > 0 && (
+              <div
+                className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full text-[11px] font-medium"
                 style={{
                   backgroundColor: "rgba(255,160,64,0.12)",
                   color: "var(--med)",
+                  fontFamily: "DM Mono, monospace",
                 }}
               >
                 <Clock size={10} />
@@ -435,9 +627,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
 
           <div className="flex items-center gap-2 shrink-0">
             <span
-              className={cn(
-                "px-2.5 py-1 rounded-lg text-[11px] font-medium font-mono",
-              )}
+              className="px-2.5 py-1 rounded-lg text-[11px] font-medium"
               style={{
                 backgroundColor: scfg.bg,
                 color: scfg.color,
@@ -447,9 +637,9 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
               {scfg.label}
             </span>
             {expanded ? (
-              <ChevronDown size={16} className="text-[var(--text3)]" />
+              <ChevronDown size={16} style={{ color: "var(--text3)" }} />
             ) : (
-              <ChevronRight size={16} className="text-[var(--text3)]" />
+              <ChevronRight size={16} style={{ color: "var(--text3)" }} />
             )}
           </div>
         </div>
@@ -457,12 +647,15 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
 
       {/* Expanded body */}
       {expanded && (
-        <div className="px-4 pb-4 space-y-5 border-t border-[var(--border)] pt-4">
+        <div
+          className="px-4 pb-4 space-y-5 pt-4"
+          style={{ borderTop: "1px solid var(--border)" }}
+        >
           {/* Awaiting state */}
           {status === "awaiting" && (
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm text-[var(--text2)]">
-                <Link2 size={14} className="text-[var(--purple)]" />
+              <div className="flex items-center gap-2 text-sm" style={{ color: "var(--text2)" }}>
+                <Link2 size={14} style={{ color: "#f0c864" }} />
                 <span>Owner hasn&apos;t booked a check-in call yet.</span>
               </div>
               <div className="flex items-center gap-2">
@@ -470,12 +663,22 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                   href={owner.bookingLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium bg-[var(--purple)]/10 text-[var(--purple)] hover:bg-[var(--purple)]/20 transition-all"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium transition-all"
+                  style={{
+                    backgroundColor: "rgba(240,200,100,0.12)",
+                    color: "#f0c864",
+                  }}
                 >
                   <Link2 size={12} />
                   Copy Booking Link
                 </a>
-                <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium bg-[var(--purple)]/10 text-[var(--purple)] hover:bg-[var(--purple)]/20 transition-all">
+                <button
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium transition-all"
+                  style={{
+                    backgroundColor: "rgba(240,200,100,0.12)",
+                    color: "#f0c864",
+                  }}
+                >
                   <Send size={12} />
                   Resend Reminder
                 </button>
@@ -488,19 +691,34 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
             <div className="space-y-5">
               {/* Call details */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-lg bg-[var(--surface2)]">
-                  <div className="text-[10px] text-[var(--text3)] uppercase tracking-wider mb-1 font-medium">
+                <div
+                  className="p-3 rounded-lg"
+                  style={{ backgroundColor: "var(--surface2)" }}
+                >
+                  <div
+                    className="text-[10px] uppercase tracking-wider mb-1 font-medium"
+                    style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+                  >
                     Call Date/Time
                   </div>
-                  <div className="text-sm text-[var(--text)] font-mono">
+                  <div
+                    className="text-sm"
+                    style={{ color: "var(--text)", fontFamily: "DM Mono, monospace" }}
+                  >
                     {owner.callDate} at {owner.callTime}
                   </div>
                 </div>
-                <div className="p-3 rounded-lg bg-[var(--surface2)]">
-                  <div className="text-[10px] text-[var(--text3)] uppercase tracking-wider mb-1 font-medium">
+                <div
+                  className="p-3 rounded-lg"
+                  style={{ backgroundColor: "var(--surface2)" }}
+                >
+                  <div
+                    className="text-[10px] uppercase tracking-wider mb-1 font-medium"
+                    style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+                  >
                     Stage at Call
                   </div>
-                  <div className="text-sm text-[var(--text)]">
+                  <div className="text-sm" style={{ color: "var(--text)" }}>
                     {owner.stageAtCall}
                   </div>
                 </div>
@@ -512,7 +730,8 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                   href={owner.calendlyLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs text-[var(--low)] hover:underline"
+                  className="inline-flex items-center gap-1.5 text-xs hover:underline"
+                  style={{ color: "var(--low)" }}
                 >
                   <Link2 size={12} />
                   Open Calendly
@@ -520,50 +739,70 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
               </div>
 
               {/* LLM Prep section */}
-              <div>
-                <div className="text-xs font-medium text-[var(--text2)] uppercase tracking-wider mb-2">
-                  🤖 Call Prep — Talking Points
+              {owner.talkingPoints.length > 0 && (
+                <div>
+                  <div
+                    className="text-xs font-medium uppercase tracking-wider mb-2"
+                    style={{ color: "var(--text2)", fontFamily: "DM Mono, monospace" }}
+                  >
+                    🤖 Call Prep — Talking Points
+                  </div>
+                  <div className="space-y-2">
+                    {owner.talkingPoints.map((tp) => (
+                      <div
+                        key={tp.id}
+                        className="p-2.5 rounded-lg text-xs leading-relaxed"
+                        style={{
+                          backgroundColor: "var(--surface2)",
+                          border: "1px solid var(--border)",
+                          color: "var(--text)",
+                        }}
+                      >
+                        {tp.text}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  {owner.talkingPoints.map((tp) => (
-                    <div
-                      key={tp.id}
-                      className="p-2.5 rounded-lg bg-[var(--surface2)] border border-[var(--border)] text-xs text-[var(--text)] leading-relaxed"
-                    >
-                      {tp.text}
-                    </div>
-                  ))}
-                </div>
-              </div>
+              )}
 
               {/* Agenda checklist */}
-              <div>
-                <div className="text-xs font-medium text-[var(--text2)] uppercase tracking-wider mb-2">
-                  📋 Agenda ({completedAgenda}/{agendaItems.length})
-                </div>
-                <div className="space-y-1.5">
-                  {agendaItems.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => toggleAgenda(item.id)}
-                      className="flex items-center gap-2 w-full text-left text-xs text-[var(--text)] hover:bg-[var(--surface2)] rounded-md p-1.5 transition-all"
-                    >
-                      {item.done ? (
-                        <Check size={14} className="text-[var(--green)] shrink-0" />
-                      ) : (
-                        <div className="w-3.5 h-3.5 rounded border border-[var(--border)] shrink-0" />
-                      )}
-                      <span
-                        className={cn(
-                          item.done && "line-through text-[var(--text3)]"
-                        )}
+              {agendaItems.length > 0 && (
+                <div>
+                  <div
+                    className="text-xs font-medium uppercase tracking-wider mb-2"
+                    style={{ color: "var(--text2)", fontFamily: "DM Mono, monospace" }}
+                  >
+                    📋 Agenda ({completedAgenda}/{agendaItems.length})
+                  </div>
+                  <div className="space-y-1.5">
+                    {agendaItems.map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => toggleAgenda(item.id)}
+                        className="flex items-center gap-2 w-full text-left text-xs rounded-md p-1.5 transition-all hover:bg-[var(--surface2)]"
+                        style={{ color: "var(--text)" }}
                       >
-                        {item.text}
-                      </span>
-                    </button>
-                  ))}
+                        {item.done ? (
+                          <Check size={14} className="shrink-0" style={{ color: "#64f0c8" }} />
+                        ) : (
+                          <div
+                            className="w-3.5 h-3.5 rounded shrink-0"
+                            style={{ border: "1px solid var(--border)" }}
+                          />
+                        )}
+                        <span
+                          className={cn(
+                            item.done && "line-through"
+                          )}
+                          style={item.done ? { color: "var(--text3)" } : {}}
+                        >
+                          {item.text}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
 
@@ -572,12 +811,18 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
             <div className="space-y-5">
               {/* Sentiment selector */}
               <div>
-                <div className="text-xs font-medium text-[var(--text2)] uppercase tracking-wider mb-2">
+                <div
+                  className="text-xs font-medium uppercase tracking-wider mb-2"
+                  style={{ color: "var(--text2)", fontFamily: "DM Mono, monospace" }}
+                >
                   Sentiment
                 </div>
                 <div className="flex items-center gap-2">
                   {(
-                    Object.entries(sentimentConfig) as [Sentiment, { emoji: string; label: string }][]
+                    Object.entries(sentimentConfig) as [
+                      Sentiment,
+                      { emoji: string; label: string }
+                    ][]
                   ).map(([key, { emoji, label }]) => (
                     <button
                       key={key}
@@ -585,9 +830,23 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                       className={cn(
                         "flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all",
                         sentiment === key
-                          ? "bg-[var(--surface2)] ring-1 ring-[var(--border)]"
-                          : "text-[var(--text3)] hover:text-[var(--text)]"
+                          ? ""
+                          : ""
                       )}
+                      style={{
+                        backgroundColor:
+                          sentiment === key
+                            ? "var(--surface2)"
+                            : "transparent",
+                        border:
+                          sentiment === key
+                            ? "1px solid var(--border)"
+                            : "1px solid transparent",
+                        color:
+                          sentiment === key
+                            ? "var(--text)"
+                            : "var(--text3)",
+                      }}
                     >
                       <span className="text-base">{emoji}</span>
                       {label}
@@ -599,10 +858,20 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
               {/* AI Summary */}
               {(owner.aiSummary || mergedSummary) && (
                 <div>
-                  <div className="text-xs font-medium text-[var(--text2)] uppercase tracking-wider mb-2">
+                  <div
+                    className="text-xs font-medium uppercase tracking-wider mb-2"
+                    style={{ color: "var(--text2)", fontFamily: "DM Mono, monospace" }}
+                  >
                     🤖 AI Summary
                   </div>
-                  <div className="p-3 rounded-lg bg-[var(--surface2)] border border-[var(--border)] text-sm text-[var(--text)] leading-relaxed">
+                  <div
+                    className="p-3 rounded-lg text-sm leading-relaxed"
+                    style={{
+                      backgroundColor: "var(--surface2)",
+                      border: "1px solid var(--border)",
+                      color: "var(--text)",
+                    }}
+                  >
                     {mergedSummary || owner.aiSummary}
                   </div>
                 </div>
@@ -610,48 +879,122 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
 
               {/* Raw notes textarea */}
               <div>
-                <div className="text-xs font-medium text-[var(--text2)] uppercase tracking-wider mb-2">
+                <div
+                  className="text-xs font-medium uppercase tracking-wider mb-2"
+                  style={{ color: "var(--text2)", fontFamily: "DM Mono, monospace" }}
+                >
                   📝 Raw Notes
                 </div>
                 <textarea
-                  className="w-full min-h-[100px] bg-[var(--surface2)] border border-[var(--border)] rounded-lg p-3 text-sm text-[var(--text)] leading-relaxed resize-y focus:outline-none focus:border-[var(--purple)] transition-colors placeholder-[var(--text3)]"
+                  className="w-full min-h-[100px] rounded-lg p-3 text-sm leading-relaxed resize-y focus:outline-none transition-colors"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Enter call notes..."
-                  style={{ fontFamily: "DM Sans, sans-serif" }}
+                  style={{
+                    backgroundColor: "var(--surface2)",
+                    border: "1px solid var(--border)",
+                    color: "var(--text)",
+                    fontFamily: "DM Sans, sans-serif",
+                  }}
                 />
               </div>
 
               {/* Merge button */}
               <button
                 onClick={handleMerge}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium bg-[var(--purple)]/10 text-[var(--purple)] hover:bg-[var(--purple)]/20 transition-all"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium transition-all"
+                style={{
+                  backgroundColor: "rgba(176,136,255,0.12)",
+                  color: "var(--purple)",
+                }}
               >
                 <Merge size={12} />
                 Merge Notes → AI Summary
               </button>
 
-              {/* Action items */}
+              {/* Outcome buttons in completed body */}
+              <div className="flex items-center gap-2 pt-2" style={{ borderTop: "1px solid var(--border)" }}>
+                <button
+                  onClick={() => setStatus("completed")}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                  style={{
+                    backgroundColor:
+                      status === "completed"
+                        ? "rgba(100,240,200,0.15)"
+                        : "rgba(100,240,200,0.06)",
+                    color: "#64f0c8",
+                    border:
+                      status === "completed"
+                        ? "1px solid rgba(100,240,200,0.3)"
+                        : "1px solid transparent",
+                  }}
+                >
+                  <Check size={12} />
+                  ✓ Completed
+                </button>
+                <button
+                  onClick={() => setStatus("noshow")}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                  style={{
+                    backgroundColor:
+                      status === "noshow"
+                        ? "rgba(255,107,107,0.15)"
+                        : "rgba(255,107,107,0.06)",
+                    color: "var(--high)",
+                    border:
+                      status === "noshow"
+                        ? "1px solid rgba(255,107,107,0.3)"
+                        : "1px solid transparent",
+                  }}
+                >
+                  <X size={12} />
+                  ✕ No-show
+                </button>
+                <button
+                  onClick={() => setStatus("awaiting")}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                  style={{
+                    backgroundColor: "var(--surface2)",
+                    color: "var(--text2)",
+                  }}
+                >
+                  <RotateCcw size={12} />
+                  Back to awaiting
+                </button>
+              </div>
+
+              {/* Follow-up tasks */}
               {actionItems.length > 0 && (
                 <div>
-                  <div className="text-xs font-medium text-[var(--text2)] uppercase tracking-wider mb-2">
-                    ✅ Action Items
+                  <div
+                    className="text-xs font-medium uppercase tracking-wider mb-2"
+                    style={{ color: "var(--text2)", fontFamily: "DM Mono, monospace" }}
+                  >
+                    ✅ Follow-up tasks → assign & send to Daily Tasks
                   </div>
                   <div className="space-y-2">
                     {actionItems.map((item) => (
                       <div
                         key={item.id}
-                        className="flex items-center gap-2 text-xs text-[var(--text)]"
+                        className="flex items-center gap-2 text-xs"
+                        style={{ color: "var(--text)" }}
                       >
-                        {item.done ? (
-                          <Check size={14} className="text-[var(--green)] shrink-0" />
-                        ) : (
-                          <div className="w-3.5 h-3.5 rounded border border-[var(--border)] shrink-0" />
-                        )}
+                        <button onClick={() => toggleAction(item.id)} className="shrink-0">
+                          {item.done ? (
+                            <Check size={14} style={{ color: "#64f0c8" }} />
+                          ) : (
+                            <div
+                              className="w-3.5 h-3.5 rounded"
+                              style={{ border: "1px solid var(--border)" }}
+                            />
+                          )}
+                        </button>
                         <span
                           className={cn(
-                            item.done && "line-through text-[var(--text3)]"
+                            "flex-1",
+                            item.done && "line-through"
                           )}
+                          style={item.done ? { color: "var(--text3)" } : {}}
                         >
                           {item.text}
                         </span>
@@ -661,12 +1004,49 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                 </div>
               )}
 
+              {/* Add task input */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={newTask}
+                  onChange={(e) => setNewTask(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleAddTask();
+                  }}
+                  placeholder="Add follow-up task..."
+                  className="flex-1 px-3 py-1.5 rounded-lg text-xs focus:outline-none transition-colors"
+                  style={{
+                    backgroundColor: "var(--surface2)",
+                    border: "1px solid var(--border)",
+                    color: "var(--text)",
+                    fontFamily: "DM Sans, sans-serif",
+                  }}
+                />
+                <button
+                  onClick={handleAddTask}
+                  disabled={!newTask.trim()}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                  style={{
+                    backgroundColor: newTask.trim()
+                      ? "rgba(100,200,240,0.12)"
+                      : "var(--surface2)",
+                    color: newTask.trim() ? "var(--low)" : "var(--text3)",
+                    border: "1px solid var(--border)",
+                    opacity: newTask.trim() ? 1 : 0.5,
+                  }}
+                >
+                  <Plus size={12} />
+                  Add
+                </button>
+              </div>
+
               {/* Conversation history toggle */}
               {owner.conversationHistory.length > 0 && (
                 <div>
                   <button
                     onClick={() => setShowHistory(!showHistory)}
-                    className="flex items-center gap-1.5 text-xs font-medium text-[var(--text2)] hover:text-[var(--text)] transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-medium transition-colors"
+                    style={{ color: "var(--text2)" }}
                   >
                     {showHistory ? (
                       <ChevronDown size={14} />
@@ -676,17 +1056,29 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                     Conversation History ({owner.conversationHistory.length})
                   </button>
                   {showHistory && (
-                    <div className="mt-2 space-y-2 pl-5 border-l-2 border-[var(--border)]">
+                    <div
+                      className="mt-2 space-y-2 pl-5"
+                      style={{ borderLeft: "2px solid var(--border)" }}
+                    >
                       {owner.conversationHistory.map((cycle, i) => (
                         <div key={i} className="relative">
-                          <div className="text-[10px] font-mono text-[var(--text3)] mb-1">
+                          <div
+                            className="text-[10px] mb-1"
+                            style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+                          >
                             {cycle.date}
                           </div>
-                          <div className="text-xs text-[var(--text2)] leading-relaxed">
+                          <div
+                            className="text-xs leading-relaxed"
+                            style={{ color: "var(--text2)" }}
+                          >
                             {cycle.summary}
                           </div>
                           {cycle.notes && (
-                            <div className="text-xs text-[var(--text3)] mt-1 italic">
+                            <div
+                              className="text-xs mt-1 italic"
+                              style={{ color: "var(--text3)" }}
+                            >
                               &ldquo;{cycle.notes}&rdquo;
                             </div>
                           )}
@@ -699,45 +1091,49 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
             </div>
           )}
 
-          {/* Outcome buttons */}
-          <div className="flex items-center gap-2 pt-2 border-t border-[var(--border)]">
-            {status === "awaiting" && (
-              <button
-                onClick={() => setStatus("scheduled")}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--low)]/10 text-[var(--low)] hover:bg-[var(--low)]/20 transition-all"
-              >
-                <Calendar size={12} />
-                Mark as Scheduled
-              </button>
-            )}
-            {(status === "scheduled" || status === "awaiting") && (
-              <>
+          {/* Outcome buttons for awaiting / scheduled states */}
+          {(status === "awaiting" || status === "scheduled") && (
+            <div
+              className="flex items-center gap-2 pt-2"
+              style={{ borderTop: "1px solid var(--border)" }}
+            >
+              {status === "awaiting" && (
                 <button
-                  onClick={() => setStatus("completed")}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--green)]/10 text-[var(--green)] hover:bg-[var(--green)]/20 transition-all"
+                  onClick={() => setStatus("scheduled")}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                  style={{
+                    backgroundColor: "rgba(100,200,240,0.12)",
+                    color: "var(--low)",
+                  }}
                 >
-                  <Check size={12} />
-                  Completed
+                  <Calendar size={12} />
+                  Mark as Scheduled
                 </button>
-                <button
-                  onClick={() => setStatus("noshow")}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--high)]/10 text-[var(--high)] hover:bg-[var(--high)]/20 transition-all"
-                >
-                  <X size={12} />
-                  No-Show
-                </button>
-              </>
-            )}
-            {(status === "completed" || status === "noshow") && (
+              )}
               <button
-                onClick={() => setStatus("awaiting")}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--surface2)] text-[var(--text2)] hover:text-[var(--text)] transition-all"
+                onClick={() => setStatus("completed")}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                style={{
+                  backgroundColor: "rgba(100,240,200,0.12)",
+                  color: "#64f0c8",
+                }}
               >
-                <RotateCcw size={12} />
-                Back to Awaiting
+                <Check size={12} />
+                ✓ Completed
               </button>
-            )}
-          </div>
+              <button
+                onClick={() => setStatus("noshow")}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                style={{
+                  backgroundColor: "rgba(255,107,107,0.12)",
+                  color: "var(--high)",
+                }}
+              >
+                <X size={12} />
+                ✕ No-show
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
