@@ -10,20 +10,26 @@ interface ShellLayoutProps {
   onActionClick?: () => void;
 }
 
-const pageMeta: Record<string, { title: string; stats: { label: string; value: string }[] }> = {
+interface StatItem { label: string; value: string; color?: string; }
+
+const pageMeta: Record<string, { title: string; stats: StatItem[] }> = {
   "/pipeline": {
     title: "Pipeline",
     stats: [
-      { label: "Active", value: "10" },
-      { label: "Closing soon", value: "3" },
-      { label: "Volume", value: "$9.9M" },
+      { label: "Active deals", value: "10" },
+      { label: "Pipeline value", value: "$9.9M" },
+      { label: "Closing this month", value: "3" },
+      { label: "Closed this month", value: "2" },
+      { label: "At risk", value: "2", color: "var(--high)" },
+      { label: "Avg days vs target", value: "+4.2" },
     ],
   },
   "/daily-tasks": {
     title: "Daily Tasks",
     stats: [
-      { label: "Due today", value: "8" },
-      { label: "Completed", value: "5" },
+      { label: "Today", value: "8" },
+      { label: "Done", value: "5" },
+      { label: "High priority", value: "3" },
       { label: "Properties", value: "5" },
     ],
   },
