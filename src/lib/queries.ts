@@ -4,7 +4,7 @@
 // Server-side Supabase queries. Uses service role for admin, user session for RLS.
 // ============================================================================
 
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/database.types";
 
 export type Deal = Database["public"]["Tables"]["deals"]["Row"];
@@ -19,7 +19,7 @@ export type EmailFlag = Database["public"]["Tables"]["email_flags"]["Row"];
 // ---- DEALS ----
 
 export async function getDeals(orgId: string) {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("deals")
     .select("*, stage_steps:deal_step_status(*)")
@@ -30,7 +30,7 @@ export async function getDeals(orgId: string) {
 }
 
 export async function getDeal(id: string) {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("deals")
     .select("*, stage_steps:deal_step_status(*), stage_history(*)")
@@ -41,7 +41,7 @@ export async function getDeal(id: string) {
 }
 
 export async function createDeal(values: Partial<Deal>) {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("deals")
     .insert({ ...values, stage_entered_at: new Date().toISOString() })
@@ -60,7 +60,7 @@ export async function createDeal(values: Partial<Deal>) {
 }
 
 export async function advanceDeal(id: string, newStageIdx: number) {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
 
   // Get current deal
   const { data: deal } = await supabase.from("deals").select("*").eq("id", id).single();
@@ -130,7 +130,7 @@ export async function advanceDeal(id: string, newStageIdx: number) {
 // ---- TASKS ----
 
 export async function getTasks(orgId: string) {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("tasks")
     .select("*")
@@ -141,14 +141,14 @@ export async function getTasks(orgId: string) {
 }
 
 export async function createTask(values: Partial<Task>) {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase.from("tasks").insert(values).select().single();
   if (error) throw error;
   return data;
 }
 
 export async function toggleTask(id: string, completed: boolean) {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("tasks")
     .update({ completed, completed_at: completed ? new Date().toISOString() : null })
@@ -162,7 +162,7 @@ export async function toggleTask(id: string, completed: boolean) {
 // ---- CHECKINS ----
 
 export async function getCheckins(orgId: string) {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("checkins")
     .select("*, owner:owners(*), actions:checkin_actions(*)")
@@ -172,7 +172,7 @@ export async function getCheckins(orgId: string) {
 }
 
 export async function updateCheckin(id: string, values: Partial<Checkin>) {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("checkins")
     .update({ ...values, updated_at: new Date().toISOString() })
@@ -186,7 +186,7 @@ export async function updateCheckin(id: string, values: Partial<Checkin>) {
 // ---- OWNERS ----
 
 export async function getOwners(orgId: string) {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("owners")
     .select("*")
@@ -199,7 +199,7 @@ export async function getOwners(orgId: string) {
 // ---- EMAIL FLAGS ----
 
 export async function getEmailFlags(orgId: string) {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("email_flags")
     .select("*")
@@ -212,7 +212,7 @@ export async function getEmailFlags(orgId: string) {
 // ---- STAGES ----
 
 export async function getStages(orgId: string) {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("stages")
     .select("*, steps:stage_steps(*)")
@@ -233,14 +233,14 @@ export async function logAiRun(values: {
   status: string;
   error?: string;
 }) {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   await supabase.from("ai_runs").insert(values);
 }
 
 // ---- TEAM ----
 
 export async function getProfiles(orgId: string) {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("profiles")
     .select("*")
