@@ -37,7 +37,7 @@ $$ language plpgsql;
 -- TABLE: organizations
 -- Top-level tenant / brokerage account
 -- ============================================================================
-create table organizations (
+create table if not exists organizations (
   id          uuid primary key default gen_random_uuid(),
   name        text not null,
   created_at  timestamptz not null default now(),

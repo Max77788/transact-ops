@@ -138,7 +138,7 @@ export function Sidebar({
                 isActive ? "font-medium" : "font-normal"
               )}
               style={{
-                color: isActive ? "var(--accent)" : "var(--text2)",
+                color: isActive ? "var(--accent)" : "var(--text)",
                 backgroundColor: isActive
                   ? "rgba(200,240,100,0.06)"
                   : "transparent",
@@ -159,7 +159,7 @@ export function Sidebar({
               {/* Label + sublabel */}
               <div className="flex-1 min-w-0 py-0.5">
                 <div className="flex items-center gap-2">
-                  <span className="truncate text-sm">{item.label}</span>
+                  <span className="truncate font-medium" style={{ fontSize: "14px" }}>{item.label}</span>
                   {item.badge !== undefined && (
                     <span
                       className="text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0"
