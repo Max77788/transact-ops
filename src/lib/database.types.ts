@@ -261,7 +261,7 @@ export interface WebhookEvent {
 // ----------------------------------------------------------------------------
 
 export interface Database {
-  public: {
+  transact_ops: {
     Tables: {
       organizations: {
         Row: Organization;

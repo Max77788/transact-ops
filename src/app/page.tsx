@@ -1,6 +1,5 @@
 "use client";
 
-import { ShellLayout } from "@/components/shell-layout";
 import { GitBranch, ListChecks, Mail, MessageSquare, Users } from "lucide-react";
 import Link from "next/link";
 
@@ -44,8 +43,7 @@ const quickLinks = [
 
 export default function Home() {
   return (
-    <ShellLayout>
-      <div className="flex flex-col items-center justify-center py-20 px-6">
+    <div className="flex flex-col items-center justify-center py-20 px-6">
         <h1
           className="text-3xl mb-2"
           style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)" }}
@@ -83,6 +81,5 @@ export default function Home() {
           ))}
         </div>
       </div>
-    </ShellLayout>
-  );
+    );
 }

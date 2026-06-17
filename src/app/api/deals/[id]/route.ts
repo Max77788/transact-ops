@@ -40,7 +40,7 @@ export async function PATCH(
     const supabase = createAdminClient();
 
     // Build update payload from allowed fields
-    type DealUpdate = Database["public"]["Tables"]["deals"]["Update"];
+    type DealUpdate = Database["transact_ops"]["Tables"]["deals"]["Update"];
     const updates: DealUpdate = {};
     const allowedFields = [
       "address",

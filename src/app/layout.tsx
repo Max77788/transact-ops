@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Shell } from "@/components/shell";
 
 export const metadata: Metadata = {
   title: "TransactOps",
@@ -33,7 +34,7 @@ export default function RootLayout({
           fontFamily: "DM Sans, sans-serif",
         }}
       >
-        {children}
+        <Shell>{children}</Shell>
       </body>
     </html>
   );

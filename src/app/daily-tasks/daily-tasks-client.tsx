@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ShellLayout } from "@/components/shell-layout";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronRight, Trash2, CheckCircle2, Circle, Plus } from "lucide-react";
 
@@ -114,8 +113,7 @@ export function DailyTasksClient({ initialTasks }: { initialTasks: TaskItem[] })
   const dateLabel = today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
 
   return (
-    <ShellLayout>
-      <div className="px-6 pt-4 pb-6">
+    <div className="px-6 pt-4 pb-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -160,6 +158,5 @@ export function DailyTasksClient({ initialTasks }: { initialTasks: TaskItem[] })
           brokerageGroups.map((g, i) => <BrokerageGroupComp key={i} group={g} onToggle={toggleTask} onDelete={deleteTask} />)
         )}
       </div>
-    </ShellLayout>
   );
 }

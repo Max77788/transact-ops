@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ShellLayout } from "@/components/shell-layout";
 import { CheckCircle2, Circle, Lock } from "lucide-react";
 
 type DBStage = {
@@ -16,8 +15,7 @@ export function StagesClient({ initialStages }: { initialStages: DBStage[] }) {
   const sorted = [...initialStages].sort((a, b) => a.idx - b.idx);
 
   return (
-    <ShellLayout>
-      <div className="px-6 pt-4 pb-6 space-y-4">
+    <div className="px-6 pt-4 pb-6 space-y-4">
         <h2 className="text-lg" style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)" }}>
           Pipeline Stages
         </h2>
@@ -72,6 +70,5 @@ export function StagesClient({ initialStages }: { initialStages: DBStage[] }) {
           ))
         )}
       </div>
-    </ShellLayout>
   );
 }

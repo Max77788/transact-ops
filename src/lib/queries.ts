@@ -7,14 +7,14 @@
 import { createAdminClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/database.types";
 
-export type Deal = Database["public"]["Tables"]["deals"]["Row"];
-export type Task = Database["public"]["Tables"]["tasks"]["Row"];
-export type Checkin = Database["public"]["Tables"]["checkins"]["Row"];
-export type Owner = Database["public"]["Tables"]["owners"]["Row"];
-export type Stage = Database["public"]["Tables"]["stages"]["Row"];
-export type StageStep = Database["public"]["Tables"]["stage_steps"]["Row"];
-export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
-export type EmailFlag = Database["public"]["Tables"]["email_flags"]["Row"];
+export type Deal = Database["transact_ops"]["Tables"]["deals"]["Row"];
+export type Task = Database["transact_ops"]["Tables"]["tasks"]["Row"];
+export type Checkin = Database["transact_ops"]["Tables"]["checkins"]["Row"];
+export type Owner = Database["transact_ops"]["Tables"]["owners"]["Row"];
+export type Stage = Database["transact_ops"]["Tables"]["stages"]["Row"];
+export type StageStep = Database["transact_ops"]["Tables"]["stage_steps"]["Row"];
+export type Profile = Database["transact_ops"]["Tables"]["profiles"]["Row"];
+export type EmailFlag = Database["transact_ops"]["Tables"]["email_flags"]["Row"];
 
 // ---- DEALS ----
 

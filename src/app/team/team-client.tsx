@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ShellLayout } from "@/components/shell-layout";
 import { cn } from "@/lib/utils";
 import { MapPin, X, ToggleLeft, ToggleRight } from "lucide-react";
 
@@ -61,8 +60,7 @@ export function TeamClient({ initialProfiles }: { initialProfiles: Profile[] }) 
   };
 
   return (
-    <ShellLayout actionLabel="Add member" onActionClick={() => {}}>
-      <div className="px-6 pt-4 pb-6">
+    <div className="px-6 pt-4 pb-6">
         <div
           className="rounded-lg overflow-hidden"
           style={{ backgroundColor: "var(--surface)" }}
@@ -170,6 +168,5 @@ export function TeamClient({ initialProfiles }: { initialProfiles: Profile[] }) 
           )}
         </div>
       </div>
-    </ShellLayout>
   );
 }
