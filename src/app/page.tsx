@@ -1,6 +1,6 @@
 "use client";
 
-import { GitBranch, ListChecks, Mail, MessageSquare, Users } from "lucide-react";
+import { GitBranch, ListChecks, Mail, MessageSquare, Users, Sliders, UserCircle } from "lucide-react";
 import Link from "next/link";
 
 const quickLinks = [
@@ -38,6 +38,20 @@ const quickLinks = [
     href: "/owner-checkins",
     icon: <Users size={20} />,
     color: "#4ade80",
+  },
+  {
+    label: "Team",
+    description: "Manage team members and roles",
+    href: "/team",
+    icon: <UserCircle size={20} />,
+    color: "#ff6b6b",
+  },
+  {
+    label: "Stages",
+    description: "Configure pipeline stages and steps",
+    href: "/stages",
+    icon: <Sliders size={20} />,
+    color: "#f0c864",
   },
 ];
 
