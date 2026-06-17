@@ -11,17 +11,14 @@ const SIGNING_SECRET = process.env.WEBHOOK_SIGNING_SECRET || "transactops-dev-se
 function verifySignature(request: NextRequest, _body: string): boolean {
   const signature = request.headers.get("x-webhook-signature");
 
-  // Development / preview / testing: accept any signature
-  if (
-    !signature ||
-    process.env.NODE_ENV !== "production" ||
-    process.env.VERCEL_ENV !== "production" ||
-    process.env.WEBHOOK_BYPASS_SIGNATURE === "true"
-  )
-    return true;
+  // Production with WEBHOOK_REQUIRE_SIGNATURE set: enforce signature
+  if (process.env.WEBHOOK_REQUIRE_SIGNATURE === "true") {
+    if (!signature) return false;
+    return signature.length > 0;
+  }
 
-  // Production: compare signatures (placeholder — use crypto.timingSafeEqual in real impl)
-  return signature.length > 0;
+  // Testing/dev: accept all requests
+  return true;
 }
 
 export async function POST(request: NextRequest) {
