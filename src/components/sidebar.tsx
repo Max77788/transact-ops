@@ -2,15 +2,15 @@
 
 import { cn } from "@/lib/utils";
 import {
-  LayoutDashboard,
-  ListChecks,
   Mail,
+  ListChecks,
   MessageSquare,
   Users,
   Building2,
   GitBranch,
   Settings2,
   Calendar,
+  X,
 } from "lucide-react";
 
 interface NavItem {
@@ -80,17 +80,50 @@ const navItems: NavItem[] = [
 
 export function Sidebar({
   currentPath = "/pipeline",
+  open = false,
+  onClose,
 }: {
   currentPath?: string;
+  open?: boolean;
+  onClose?: () => void;
 }) {
   return (
-    <aside
-      className="fixed left-0 top-0 bottom-0 flex flex-col z-30"
-      style={{ width: "var(--sidebar-w)", backgroundColor: "var(--surface)" }}
-    >
+    <>
+      {/* Desktop: always visible fixed sidebar */}
+      <aside
+        className="hidden lg:flex fixed left-0 top-0 bottom-0 flex-col z-30"
+        style={{ width: "var(--sidebar-w)", backgroundColor: "var(--surface)" }}
+      >
+        <SidebarContent currentPath={currentPath} />
+      </aside>
+
+      {/* Mobile: slide-over drawer */}
+      <aside
+        className={cn(
+          "lg:hidden fixed left-0 top-0 bottom-0 flex flex-col z-50 transition-transform duration-200",
+          open ? "translate-x-0" : "-translate-x-full"
+        )}
+        style={{ width: "min(var(--sidebar-w), 280px)", backgroundColor: "var(--surface)" }}
+      >
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-1.5 rounded-md lg:hidden"
+          style={{ color: "var(--text2)" }}
+        >
+          <X size={18} />
+        </button>
+        <SidebarContent currentPath={currentPath} />
+      </aside>
+    </>
+  );
+}
+
+function SidebarContent({ currentPath }: { currentPath: string }) {
+  return (
+    <>
       {/* Logo */}
       <div className="px-5 pt-5 pb-3">
-        {/* Eyebrow */}
         <p
           className="tracking-[0.15em] uppercase"
           style={{
@@ -102,7 +135,6 @@ export function Sidebar({
         >
           Brokerage OS
         </p>
-        {/* Logo */}
         <h1
           className="text-xl tracking-tight mt-0.5"
           style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)" }}
@@ -110,7 +142,6 @@ export function Sidebar({
           Transact
           <span style={{ color: "var(--accent)" }}>Ops</span>
         </h1>
-        {/* Subtitle */}
         <p
           className="text-[11px] mt-0.5 tracking-wide uppercase"
           style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
@@ -134,7 +165,7 @@ export function Sidebar({
               key={item.label}
               href={item.href}
               className={cn(
-                "flex items-center gap-2.5 px-2 py-2 rounded-md transition-colors relative group",
+                "flex items-center gap-2.5 px-2 py-2 rounded-md transition-colors",
                 isActive ? "font-medium" : "font-normal"
               )}
               style={{
@@ -147,7 +178,6 @@ export function Sidebar({
                   : "2px solid transparent",
               }}
             >
-              {/* Dot */}
               <span
                 className="shrink-0 rounded-full"
                 style={{
@@ -156,7 +186,6 @@ export function Sidebar({
                   backgroundColor: item.dotColor,
                 }}
               />
-              {/* Label + sublabel */}
               <div className="flex-1 min-w-0 py-0.5">
                 <div className="flex items-center gap-2">
                   <span className="truncate font-medium" style={{ fontSize: "14px" }}>{item.label}</span>
@@ -210,6 +239,6 @@ export function Sidebar({
           <div>Airtable: not yet connected</div>
         </div>
       </div>
-    </aside>
+    </>
   );
 }

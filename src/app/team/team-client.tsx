@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { MapPin, X, ToggleLeft, ToggleRight } from "lucide-react";
+import { MapPin, ToggleLeft, ToggleRight } from "lucide-react";
 
 interface Profile {
   id: string;
@@ -59,114 +59,156 @@ export function TeamClient({ initialProfiles }: { initialProfiles: Profile[] }) 
     );
   };
 
-  return (
-    <div className="px-6 pt-4 pb-6">
-        <div
-          className="rounded-lg overflow-hidden"
-          style={{ backgroundColor: "var(--surface)" }}
-        >
-          <div
-            className="flex items-center px-4 py-2.5 text-[10px] font-medium uppercase tracking-wider"
-            style={{
-              color: "var(--text3)",
-              fontFamily: "DM Mono, monospace",
-              borderBottom: "1px solid var(--border)",
-            }}
-          >
-            <span style={{ width: "35%" }}>Name</span>
-            <span style={{ width: "20%" }}>Role</span>
-            <span style={{ width: "15%" }}>Location</span>
-            <span style={{ width: "15%" }}>Status</span>
-            <span style={{ width: "15%" }} />
-          </div>
-
-          {profiles.length === 0 ? (
-            <div className="px-4 py-8 text-center text-sm" style={{ color: "var(--text3)" }}>
-              No team members yet. Add users in Supabase Auth.
-            </div>
-          ) : (
-            profiles.map((p) => {
-              const color = ROLE_COLORS[p.role] || "#888";
-              const initials = p.full_name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")
-                .slice(0, 2);
-
-              return (
-                <div
-                  key={p.id}
-                  className={cn(
-                    "flex items-center px-4 py-3 transition-colors",
-                    !p.active && "opacity-40"
-                  )}
-                  style={{ borderBottom: "1px solid var(--border)" }}
-                >
-                  <div className="flex items-center gap-3" style={{ width: "35%" }}>
-                    <div
-                      className="rounded-full flex items-center justify-center shrink-0 text-xs font-medium"
-                      style={{
-                        width: 32,
-                        height: 32,
-                        backgroundColor: color + "20",
-                        color,
-                        fontFamily: "Instrument Serif, serif",
-                      }}
-                    >
-                      {initials}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium truncate" style={{ color: "var(--text)" }}>
-                        {p.full_name}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div style={{ width: "20%" }}>
-                    <RolePill role={p.role} />
-                  </div>
-
-                  <div style={{ width: "15%" }}>
-                    <span className="flex items-center gap-1">
-                      <MapPin size={10} style={{ color: "var(--text3)" }} />
-                      <span className="text-[11px]" style={{ color: "var(--text2)" }}>
-                        {p.location || "—"}
-                      </span>
-                    </span>
-                  </div>
-
-                  <div style={{ width: "15%" }}>
-                    <span
-                      className="inline-flex items-center gap-1.5 text-[11px] font-medium"
-                      style={{
-                        color: p.active ? "var(--accent)" : "var(--text3)",
-                        fontFamily: "DM Mono, monospace",
-                      }}
-                    >
-                      <span
-                        className="inline-block w-1.5 h-1.5 rounded-full"
-                        style={{
-                          backgroundColor: p.active ? "var(--accent)" : "var(--border)",
-                        }}
-                      />
-                      {p.active ? "Active" : "Inactive"}
-                    </span>
-                  </div>
-
-                  <div style={{ width: "15%", textAlign: "right" }}>
-                    <button
-                      onClick={() => toggleActive(p.id)}
-                      className="transition-colors p-0.5"
-                      style={{ color: p.active ? "var(--accent)" : "var(--text3)" }}
-                    >
-                      {p.active ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
-                    </button>
-                  </div>
-                </div>
-              );
-            })
-          )}
+  if (profiles.length === 0) {
+    return (
+      <div className="px-4 sm:px-6 pt-4 pb-6">
+        <div className="px-4 py-8 text-center text-sm" style={{ color: "var(--text3)" }}>
+          No team members yet. Add users in Supabase Auth.
         </div>
       </div>
+    );
+  }
+
+  return (
+    <div className="px-4 sm:px-6 pt-4 pb-6">
+      {/* Mobile: card list */}
+      <div className="sm:hidden space-y-2">
+        {profiles.map((p) => {
+          const color = ROLE_COLORS[p.role] || "#888";
+          const initials = p.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2);
+          return (
+            <div
+              key={p.id}
+              className={cn("rounded-lg p-4", !p.active && "opacity-40")}
+              style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div
+                    className="rounded-full flex items-center justify-center shrink-0 text-xs font-medium"
+                    style={{
+                      width: 36,
+                      height: 36,
+                      backgroundColor: color + "20",
+                      color,
+                      fontFamily: "Instrument Serif, serif",
+                    }}
+                  >
+                    {initials}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate" style={{ color: "var(--text)" }}>
+                      {p.full_name}
+                    </p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <RolePill role={p.role} />
+                      <span className="flex items-center gap-1 text-[11px]" style={{ color: "var(--text2)" }}>
+                        <MapPin size={10} />
+                        {p.location || "—"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => toggleActive(p.id)}
+                  className="shrink-0 p-1"
+                  style={{ color: p.active ? "var(--accent)" : "var(--text3)" }}
+                >
+                  {p.active ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop: table */}
+      <div
+        className="hidden sm:block rounded-lg overflow-hidden"
+        style={{ backgroundColor: "var(--surface)" }}
+      >
+        <div
+          className="flex items-center px-4 py-2.5 text-[10px] font-medium uppercase tracking-wider"
+          style={{
+            color: "var(--text3)",
+            fontFamily: "DM Mono, monospace",
+            borderBottom: "1px solid var(--border)",
+          }}
+        >
+          <span className="flex-1">Name</span>
+          <span className="w-[120px]">Role</span>
+          <span className="w-[100px]">Location</span>
+          <span className="w-[100px]">Status</span>
+          <span className="w-[60px]" />
+        </div>
+
+        {profiles.map((p) => {
+          const color = ROLE_COLORS[p.role] || "#888";
+          const initials = p.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2);
+          return (
+            <div
+              key={p.id}
+              className={cn("flex items-center px-4 py-3 transition-colors", !p.active && "opacity-40")}
+              style={{ borderBottom: "1px solid var(--border)" }}
+            >
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <div
+                  className="rounded-full flex items-center justify-center shrink-0 text-xs font-medium"
+                  style={{
+                    width: 32,
+                    height: 32,
+                    backgroundColor: color + "20",
+                    color,
+                    fontFamily: "Instrument Serif, serif",
+                  }}
+                >
+                  {initials}
+                </div>
+                <span className="text-sm font-medium truncate" style={{ color: "var(--text)" }}>
+                  {p.full_name}
+                </span>
+              </div>
+
+              <div className="w-[120px]">
+                <RolePill role={p.role} />
+              </div>
+
+              <div className="w-[100px]">
+                <span className="flex items-center gap-1 text-[11px]" style={{ color: "var(--text2)" }}>
+                  <MapPin size={10} style={{ color: "var(--text3)" }} />
+                  {p.location || "—"}
+                </span>
+              </div>
+
+              <div className="w-[100px]">
+                <span
+                  className="inline-flex items-center gap-1.5 text-[11px] font-medium"
+                  style={{
+                    color: p.active ? "var(--accent)" : "var(--text3)",
+                    fontFamily: "DM Mono, monospace",
+                  }}
+                >
+                  <span
+                    className="inline-block w-1.5 h-1.5 rounded-full"
+                    style={{ backgroundColor: p.active ? "var(--accent)" : "var(--border)" }}
+                  />
+                  {p.active ? "Active" : "Inactive"}
+                </span>
+              </div>
+
+              <div className="w-[60px] text-right">
+                <button
+                  onClick={() => toggleActive(p.id)}
+                  className="transition-colors p-0.5"
+                  style={{ color: p.active ? "var(--accent)" : "var(--text3)" }}
+                >
+                  {p.active ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }

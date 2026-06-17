@@ -14,7 +14,7 @@ export default async function PipelinePage() {
   }
 
   return (
-    <div className="px-6 pt-4 pb-6">
+    <div className="px-4 sm:px-6 pt-4 pb-6">
       <h2 className="text-lg mb-4" style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)" }}>
         Pipeline · {deals?.length || 0} deals
       </h2>

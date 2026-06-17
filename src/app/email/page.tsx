@@ -7,7 +7,7 @@ export default async function EmailPage() {
   const flags = await getEmailFlags(ORG_ID);
 
   return (
-    <div className="px-6 pt-4 pb-6">
+    <div className="px-4 sm:px-6 pt-4 pb-6">
       <h2 className="text-lg mb-4" style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)" }}>
         Email Triage · {flags?.length || 0} flagged
       </h2>

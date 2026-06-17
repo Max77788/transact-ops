@@ -15,7 +15,7 @@ export function StagesClient({ initialStages }: { initialStages: DBStage[] }) {
   const sorted = [...initialStages].sort((a, b) => a.idx - b.idx);
 
   return (
-    <div className="px-6 pt-4 pb-6 space-y-4">
+    <div className="px-4 sm:px-6 pt-4 pb-6 space-y-4">
         <h2 className="text-lg" style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)" }}>
           Pipeline Stages
         </h2>

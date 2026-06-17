@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Plus, Search } from "lucide-react";
+import { Bell, Plus, Search, Menu } from "lucide-react";
 
 interface MetaStat {
   label: string;
@@ -13,31 +13,41 @@ interface TopbarProps {
   stats?: MetaStat[];
   actionLabel?: string;
   onActionClick?: () => void;
+  onMenuClick?: () => void;
 }
 
-export function Topbar({ title, stats = [], actionLabel, onActionClick }: TopbarProps) {
+export function Topbar({ title, stats = [], actionLabel, onActionClick, onMenuClick }: TopbarProps) {
   return (
     <header
-      className="sticky top-0 z-20 flex flex-col justify-center px-7 shrink-0"
+      className="sticky top-0 z-20 flex flex-col justify-center shrink-0"
       style={{
         backgroundColor: "var(--bg)",
-        borderBottom: `1px solid var(--border)`,
-        paddingTop: 15,
-        paddingBottom: 12,
+        borderBottom: "1px solid var(--border)",
+        padding: "12px 16px",
       }}
     >
-      {/* Top row: Title + Actions */}
-      <div className="flex items-center justify-between mb-3">
-        <h2
-          className="text-2xl tracking-tight"
-          style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)", letterSpacing: "-0.02em" }}
-        >
-          {title}
-        </h2>
-        <div className="flex items-center gap-2">
+      {/* Top row: hamburger + Title + Actions */}
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <div className="flex items-center gap-2 min-w-0">
+          {/* Hamburger — mobile only */}
+          <button
+            onClick={onMenuClick}
+            className="lg:hidden p-1.5 -ml-1 rounded-md shrink-0"
+            style={{ color: "var(--text2)" }}
+          >
+            <Menu size={18} />
+          </button>
+          <h2
+            className="text-xl sm:text-2xl tracking-tight truncate"
+            style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)", letterSpacing: "-0.02em" }}
+          >
+            {title}
+          </h2>
+        </div>
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {actionLabel && onActionClick && (
             <button
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 hover:-translate-y-px"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
               style={{
                 backgroundColor: "var(--accent)",
                 color: "var(--bg)",
@@ -50,7 +60,7 @@ export function Topbar({ title, stats = [], actionLabel, onActionClick }: Topbar
             </button>
           )}
           <button
-            className="p-1.5 rounded-md transition-colors"
+            className="p-1.5 rounded-md transition-colors hidden sm:block"
             style={{ color: "var(--text2)" }}
           >
             <Search size={16} />
@@ -70,7 +80,7 @@ export function Topbar({ title, stats = [], actionLabel, onActionClick }: Topbar
             />
           </button>
           <div
-            className="ml-2 rounded-lg flex items-center justify-center text-[11px] font-semibold"
+            className="rounded-lg flex items-center justify-center text-[11px] font-semibold shrink-0"
             style={{
               width: 28,
               height: 28,
@@ -84,17 +94,20 @@ export function Topbar({ title, stats = [], actionLabel, onActionClick }: Topbar
         </div>
       </div>
 
-      {/* Meta strip */}
+      {/* Meta strip — horizontally scrollable on mobile */}
       {stats.length > 0 && (
-        <div className="flex items-center gap-4 flex-wrap" style={{ paddingBottom: 0 }}>
+        <div
+          className="flex items-center gap-3 sm:gap-4 overflow-x-auto pb-0.5"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
           {stats.map((stat, i) => (
-            <div key={stat.label} className="flex items-center gap-4">
+            <div key={stat.label} className="flex items-center gap-3 sm:gap-4 shrink-0">
               {i > 0 && (
-                <div style={{ width: 1, height: 14, backgroundColor: "var(--border)", alignSelf: "stretch" }} />
+                <div style={{ width: 1, height: 14, backgroundColor: "var(--border)" }} />
               )}
               <div className="flex items-center gap-1.5">
                 <span
-                  className="text-[11px]"
+                  className="text-[10px] sm:text-[11px]"
                   style={{
                     color: stat.color || "var(--text2)",
                     fontFamily: "DM Mono, monospace",
@@ -103,7 +116,7 @@ export function Topbar({ title, stats = [], actionLabel, onActionClick }: Topbar
                   {stat.label}:
                 </span>
                 <strong
-                  className="text-[11px]"
+                  className="text-[10px] sm:text-[11px]"
                   style={{
                     color: stat.color || "var(--text)",
                     fontFamily: "DM Mono, monospace",

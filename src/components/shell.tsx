@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
 import { Sidebar } from "@/components/sidebar";
 import { Topbar } from "@/components/topbar";
 import { usePathname } from "next/navigation";
@@ -72,15 +73,60 @@ const pageMeta: Record<string, { title: string; stats: StatItem[] }> = {
 export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const meta = pageMeta[pathname] || { title: "TransactOps", stats: [] };
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
+
+  // Close sidebar on window resize to desktop
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth >= 1024) setSidebarOpen(false);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  // Lock body scroll when mobile sidebar is open
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [sidebarOpen]);
 
   return (
     <div className="flex h-full">
-      <Sidebar currentPath={pathname} />
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 lg:hidden"
+          style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar — fixed on desktop, slide-over on mobile */}
+      <Sidebar
+        currentPath={pathname}
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+
+      {/* Main content area */}
       <div
         className="flex flex-col flex-1 min-w-0"
-        style={{ marginLeft: "var(--sidebar-w)" }}
+        style={{ marginLeft: "max(var(--sidebar-w), 0px)" }}
       >
-        <Topbar title={meta.title} stats={meta.stats} />
+        <Topbar
+          title={meta.title}
+          stats={meta.stats}
+          onMenuClick={() => setSidebarOpen(true)}
+        />
         <main className="flex-1 overflow-auto">{children}</main>
       </div>
     </div>

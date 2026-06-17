@@ -19,7 +19,7 @@ export default async function CommunicationsPage() {
     .limit(10);
 
   return (
-    <div className="px-6 pt-4 pb-6 space-y-6">
+    <div className="px-4 sm:px-6 pt-4 pb-6 space-y-6">
       <div>
         <h2 className="text-lg mb-3" style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)" }}>
           Communications

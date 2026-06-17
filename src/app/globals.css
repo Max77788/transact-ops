@@ -38,6 +38,13 @@
   --topbar-h: 56px;
 }
 
+/* Mobile: full-width content */
+@media (max-width: 1023px) {
+  :root {
+    --sidebar-w: 0px;
+  }
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
@@ -102,4 +109,13 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text3);
+}
+
+/* Hide scrollbar for stat strip */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

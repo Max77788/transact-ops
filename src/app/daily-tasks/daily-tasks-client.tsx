@@ -113,7 +113,7 @@ export function DailyTasksClient({ initialTasks }: { initialTasks: TaskItem[] })
   const dateLabel = today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
 
   return (
-    <div className="px-6 pt-4 pb-6">
+    <div className="px-4 sm:px-6 pt-4 pb-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
