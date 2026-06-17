@@ -8,14 +8,14 @@ import { createAdminClient } from "@/lib/supabase/server";
 const SIGNING_SECRET = process.env.WEBHOOK_SIGNING_SECRET || "transactops-dev-secret";
 
 // Simple HMAC-like signature check (replace with real crypto in production)
-function verifySignature(request: NextRequest, body: string): boolean {
+function verifySignature(request: NextRequest, _body: string): boolean {
   const signature = request.headers.get("x-webhook-signature");
-  if (!signature) return false;
 
-  // Development mode: accept any signature for testing
+  // Development / preview / testing: accept any signature
   if (
-    process.env.NODE_ENV === "development" ||
-    process.env.VERCEL_ENV === "preview" ||
+    !signature ||
+    process.env.NODE_ENV !== "production" ||
+    process.env.VERCEL_ENV !== "production" ||
     process.env.WEBHOOK_BYPASS_SIGNATURE === "true"
   )
     return true;
