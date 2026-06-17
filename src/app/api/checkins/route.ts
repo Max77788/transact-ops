@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     const { data, error } = await (supabase as any)
       .from("checkins")
       .select("*, owner:owners!inner(*), actions:checkin_actions(*)")
-      .eq("owners.org_id", orgId)
+      .eq("owner.org_id", orgId)
       .order("scheduled_date", { ascending: true });
 
     if (error) throw error;
