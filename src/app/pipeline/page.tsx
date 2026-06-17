@@ -4,14 +4,38 @@ export const dynamic = "force-dynamic";
 const ORG_ID = "d1000000-0000-0000-0000-000000000001";
 
 export default async function PipelinePage() {
-  const deals = await getDeals(ORG_ID);
-  
+  let deals: any[] = [];
+  let error: string | null = null;
+
+  try {
+    deals = await getDeals(ORG_ID);
+  } catch (e: any) {
+    error = e?.message || e?.toString() || "Unknown error";
+  }
+
   return (
     <div className="px-6 pt-4 pb-6">
       <h2 className="text-lg mb-4" style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)" }}>
         Pipeline · {deals?.length || 0} deals
       </h2>
-      
+
+      {error && (
+        <div
+          className="rounded-lg p-4 mb-4"
+          style={{
+            backgroundColor: "var(--high)" + "18",
+            border: "1px solid var(--high)",
+          }}
+        >
+          <p className="text-xs font-medium mb-1" style={{ color: "var(--high)", fontFamily: "DM Mono, monospace" }}>
+            SERVER ERROR
+          </p>
+          <p className="text-sm" style={{ color: "var(--text)" }}>
+            {error}
+          </p>
+        </div>
+      )}
+
       {!deals || deals.length === 0 ? (
         <p className="text-sm" style={{ color: "var(--text3)" }}>No deals in pipeline yet.</p>
       ) : (
