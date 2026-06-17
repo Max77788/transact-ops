@@ -2,7 +2,9 @@
 
 import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { ChevronDown, ChevronRight, Trash2, CheckCircle2, Circle, Plus } from "lucide-react";
+import { ChevronDown, ChevronRight, Trash2, CheckCircle2, Circle, Plus, X } from "lucide-react";
+
+const ORG_ID = "d1000000-0000-0000-0000-000000000001";
 
 type TaskItem = {
   id: string;
@@ -19,6 +21,61 @@ type BrokerageGroup = { label: string; color: string; tasks: TaskItem[] };
 
 const priorityColors: Record<string, string> = { high: "#ff6b6b", med: "#ffa040", low: "#64c8f0" };
 const recurrenceLabels: Record<string, string> = { daily: "Daily", weekly: "Weekly", once: "Once" };
+
+function AddTaskModal({ onClose, onCreated }: { onClose: () => void; onCreated: (t: TaskItem) => void }) {
+  const [title, setTitle] = useState("");
+  const [assignee, setAssignee] = useState("");
+  const [recurrence, setRecurrence] = useState("once");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const submit = async () => {
+    if (!title.trim()) { setError("Title is required."); return; }
+    setSubmitting(true); setError("");
+    try {
+      const res = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-org-id": ORG_ID },
+        body: JSON.stringify({ title: title.trim(), assigned_to: assignee.trim() || null, recurrence }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Failed");
+      const t = json.data;
+      onCreated({
+        id: t.id, text: t.title, done: false, priority: "med",
+        assignee: t.assigned_to ? t.assigned_to.slice(0, 2).toUpperCase() : "JT",
+        recurrence: (t.recurrence || "once") as "once" | "daily" | "weekly",
+        dealName: null,
+      });
+      onClose();
+    } catch (e: any) { setError(e.message); }
+    finally { setSubmitting(false); }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.6)" }} onClick={onClose}>
+      <div className="rounded-xl p-6 w-full max-w-md" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold" style={{ color: "var(--text)", fontFamily: "Instrument Serif, serif" }}>Add Task</h3>
+          <button onClick={onClose} style={{ color: "var(--text3)" }}><X size={18} /></button>
+        </div>
+        <div className="space-y-3">
+          <input className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} placeholder="Task title *" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <input className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} placeholder="Assignee initials (e.g. JT)" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
+          <select className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} value={recurrence} onChange={(e) => setRecurrence(e.target.value)}>
+            <option value="once">Once</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+          </select>
+        </div>
+        {error && <p className="text-xs mt-3" style={{ color: "var(--high)" }}>{error}</p>}
+        <button className="w-full mt-4 rounded-lg py-2.5 text-sm font-semibold transition-opacity hover:opacity-90" style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }} onClick={submit} disabled={submitting}>
+          {submitting ? "Creating..." : "Create Task"}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function TaskRow({ task, onToggle, onDelete }: { task: TaskItem; onToggle: () => void; onDelete: () => void }) {
   return (
@@ -80,6 +137,7 @@ export function DailyTasksClient({ initialTasks }: { initialTasks: TaskItem[] })
   const [tasks, setTasks] = useState(initialTasks);
   const [activeTab, setActiveTab] = useState<"properties" | "brokerage">("properties");
   const [dateOffset] = useState(0);
+  const [showAdd, setShowAdd] = useState(false);
 
   const toggleTask = (taskId: string) => {
     setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, done: !t.done } : t)));
@@ -113,6 +171,7 @@ export function DailyTasksClient({ initialTasks }: { initialTasks: TaskItem[] })
   const dateLabel = today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
 
   return (
+    <>
     <div className="px-4 sm:px-6 pt-4 pb-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
@@ -122,6 +181,13 @@ export function DailyTasksClient({ initialTasks }: { initialTasks: TaskItem[] })
               {dateLabel} · {doneCount}/{tasks.length} done
             </p>
           </div>
+          <button
+            onClick={() => setShowAdd(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-opacity hover:opacity-90"
+            style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }}
+          >
+            <Plus size={14} /> Add Task
+          </button>
         </div>
 
         {/* Progress bar */}
@@ -158,5 +224,7 @@ export function DailyTasksClient({ initialTasks }: { initialTasks: TaskItem[] })
           brokerageGroups.map((g, i) => <BrokerageGroupComp key={i} group={g} onToggle={toggleTask} onDelete={deleteTask} />)
         )}
       </div>
+      {showAdd && <AddTaskModal onClose={() => setShowAdd(false)} onCreated={(t) => setTasks((prev) => [t, ...prev])} />}
+    </>
   );
 }
