@@ -36,22 +36,20 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { address, client_name, agent } = body;
 
     // Required fields
-    if (!address || !client_name || !agent) {
+    if (!body.address?.trim() || !body.client_name?.trim() || !body.agent?.trim()) {
       return NextResponse.json(
         { data: null, error: "address, client_name, and agent are required" },
         { status: 400 }
       );
     }
 
-    const deal = await createDeal({
+    const dealValues: any = {
       org_id: orgId,
-      address,
-      client_name,
-      agent,
-      tc: body.tc ?? null,
+      address: body.address,
+      client_name: body.client_name,
+      agent: body.agent,
       stage_idx: body.stage_idx ?? 0,
       price: body.price ?? null,
       type: body.type ?? "sale",
@@ -59,7 +57,8 @@ export async function POST(request: NextRequest) {
       client_email: body.client_email ?? null,
       client_phone: body.client_phone ?? null,
       notes: body.notes ?? null,
-    });
+    };
+    const deal = await createDeal(dealValues);
 
     return NextResponse.json({ data: deal, error: null }, { status: 201 });
   } catch (err: any) {
