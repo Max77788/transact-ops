@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
       address,
       client_name,
       agent,
+      tc: body.tc ?? null,
       stage_idx: body.stage_idx ?? 0,
       price: body.price ?? null,
       type: body.type ?? "sale",

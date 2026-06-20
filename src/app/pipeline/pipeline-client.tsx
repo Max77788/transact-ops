@@ -16,6 +16,7 @@ type DBStage = {
 };
 type Deal = {
   id: string; address: string; client_name: string; agent: string;
+  tc?: string;
   stage_idx: number; price: number | null; type: string; status: string;
   client_email?: string; client_phone?: string; notes?: string;
   stage_entered_at?: string; active_entered_at?: string;
@@ -23,15 +24,15 @@ type Deal = {
   stage_history?: { id: string; stage_idx: number; entered_at: string; exited_at?: string }[];
 };
 
-// ── Color palette for stage columns ──
+// ── Color palette for stage columns (neutral gray) ──
 const STAGE_COLORS = [
-  { bg: "#f0f4ff", border: "#b8ccff", accent: "#4c6ef5" },
-  { bg: "#fff4e6", border: "#ffc078", accent: "#f76707" },
-  { bg: "#e6fcf5", border: "#96f2d7", accent: "#0ca678" },
-  { bg: "#f3f0ff", border: "#c4b5fd", accent: "#7950f2" },
-  { bg: "#fff0f6", border: "#faa2c1", accent: "#d6336c" },
-  { bg: "#e6f7ff", border: "#7cc4f2", accent: "#1c7ed6" },
-  { bg: "#faf5ff", border: "#d0bfff", accent: "#9c36b5" },
+  { bg: "#f1f3f5", border: "#ced4da", accent: "#495057" },
+  { bg: "#f1f3f5", border: "#ced4da", accent: "#495057" },
+  { bg: "#f1f3f5", border: "#ced4da", accent: "#495057" },
+  { bg: "#f1f3f5", border: "#ced4da", accent: "#495057" },
+  { bg: "#f1f3f5", border: "#ced4da", accent: "#495057" },
+  { bg: "#f1f3f5", border: "#ced4da", accent: "#495057" },
+  { bg: "#f1f3f5", border: "#ced4da", accent: "#495057" },
 ];
 
 const STATUS_LABELS: Record<string, string> = {
@@ -47,6 +48,7 @@ function AddDealModal({ stages, onClose, onCreated }: {
   const [address, setAddress] = useState("");
   const [clientName, setClientName] = useState("");
   const [agent, setAgent] = useState("");
+  const [tc, setTc] = useState("");
   const [price, setPrice] = useState("");
   const [type, setType] = useState("sale");
   const [stageIdx, setStageIdx] = useState(0);
@@ -64,7 +66,8 @@ function AddDealModal({ stages, onClose, onCreated }: {
         headers: { "Content-Type": "application/json", "x-org-id": ORG_ID },
         body: JSON.stringify({
           address: address.trim(), client_name: clientName.trim(),
-          agent: agent.trim(), price: price ? Number(price) : null,
+          agent: agent.trim(), tc: tc.trim() || null,
+          price: price ? Number(price) : null,
           type, stage_idx: stageIdx,
         }),
       });
@@ -87,6 +90,7 @@ function AddDealModal({ stages, onClose, onCreated }: {
           <input className="w-full rounded-lg px-3 py-2.5 text-lg border font-bold" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} placeholder="Property address *" value={address} onChange={(e) => setAddress(e.target.value)} />
           <input className="w-full rounded-lg px-3 py-2.5 text-lg border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} placeholder="Client name *" value={clientName} onChange={(e) => setClientName(e.target.value)} />
           <input className="w-full rounded-lg px-3 py-2.5 text-lg border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} placeholder="Agent *" value={agent} onChange={(e) => setAgent(e.target.value)} />
+          <input className="w-full rounded-lg px-3 py-2.5 text-lg border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} placeholder="Transaction Coordinator (TC)" value={tc} onChange={(e) => setTc(e.target.value)} />
           <div className="flex gap-3">
             <input className="flex-1 rounded-lg px-3 py-2.5 text-lg border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} placeholder="Price" type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
             <select className="flex-1 rounded-lg px-3 py-2.5 text-lg border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} value={type} onChange={(e) => setType(e.target.value)}>
@@ -479,6 +483,14 @@ export default function PipelineClient({
                           <span className="text-lg font-bold" style={{ color: "var(--text2)" }}>
                             {deal.agent}
                           </span>
+                          {deal.tc && (
+                            <>
+                              <span className="text-lg" style={{ color: "var(--text3)" }}>·</span>
+                              <span className="text-lg font-bold" style={{ color: "var(--text3)" }} title="TC">
+                                TC: {deal.tc}
+                              </span>
+                            </>
+                          )}
                         </div>
                         <div className="flex items-center justify-between mt-2">
                           <span className="text-lg font-bold px-2 py-1 rounded-lg border-[3px]" style={{
@@ -488,11 +500,26 @@ export default function PipelineClient({
                           }}>
                             <Clock size={14} className="inline mr-1" />{daysInStage}d
                           </span>
-                          {deal.price && (
-                            <span className="text-lg font-bold" style={{ color: "#0ca678" }}>
-                              ${Number(deal.price).toLocaleString()}
-                            </span>
-                          )}
+                          <div className="flex items-center gap-1">
+                            {deal.price && (
+                              <span className="text-lg font-bold" style={{ color: "#0ca678" }}>
+                                ${Number(deal.price).toLocaleString()}
+                              </span>
+                            )}
+                            {deal.stage_idx < (sortedStages.length - 1) && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleAdvance(deal.id, deal.stage_idx + 1);
+                                }}
+                                className="ml-1 p-1.5 rounded-lg border-[3px] transition-all hover:scale-110"
+                                style={{ backgroundColor: "#e6fcf5", borderColor: "#0ca678", color: "#0ca678" }}
+                                title={`Advance to ${sortedStages[deal.stage_idx + 1]?.name}`}
+                              >
+                                <ArrowRight size={16} />
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     );
@@ -519,6 +546,7 @@ export default function PipelineClient({
                   <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--text)" }}>Address</th>
                   <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--text)" }}>Client</th>
                   <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--text)" }}>Agent</th>
+                  <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--text)" }}>TC</th>
                   <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--text)" }}>Stage</th>
                   <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--text)" }}>Price</th>
                   <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--text)" }}>Days</th>
@@ -528,7 +556,7 @@ export default function PipelineClient({
               <tbody>
                 {deals.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-10 text-lg font-bold" style={{ color: "var(--text3)" }}>
+                    <td colSpan={8} className="text-center py-10 text-lg font-bold" style={{ color: "var(--text3)" }}>
                       No deals in pipeline yet. Click "Add Deal" to create one.
                     </td>
                   </tr>
@@ -550,6 +578,7 @@ export default function PipelineClient({
                         <td className="px-4 py-3 text-lg font-bold" style={{ color: "var(--text)" }}>{deal.address}</td>
                         <td className="px-4 py-3 text-lg font-bold" style={{ color: "var(--accent)" }}>{deal.client_name}</td>
                         <td className="px-4 py-3 text-lg font-bold" style={{ color: "var(--text2)" }}>{deal.agent}</td>
+                        <td className="px-4 py-3 text-lg font-bold" style={{ color: "var(--text3)" }}>{deal.tc || "—"}</td>
                         <td className="px-4 py-3">
                           <span className="text-lg font-bold px-3 py-1.5 rounded-lg border-[3px]"
                             style={{ borderColor: "var(--border)", color: "var(--text)" }}
