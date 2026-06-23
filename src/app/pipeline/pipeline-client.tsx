@@ -24,16 +24,15 @@ type Deal = {
   stage_history?: { id: string; stage_idx: number; entered_at: string; exited_at?: string }[];
 };
 
-// ── Color palette for stage columns (dark professional, CSS vars) ──
-// Using var(--s0) through var(--s6) from globals.css
+// ── Color palette for stage columns — single dark theme ──
 const STAGE_COLORS = [
-  { bg: "rgba(155,138,255,0.08)", border: "rgba(155,138,255,0.25)", accent: "var(--s0)", pill: "rgba(155,138,255,0.15)" },
-  { bg: "rgba(74,144,217,0.08)", border: "rgba(74,144,217,0.25)", accent: "var(--s1)", pill: "rgba(74,144,217,0.15)" },
-  { bg: "rgba(200,134,31,0.08)", border: "rgba(200,134,31,0.25)", accent: "var(--s2)", pill: "rgba(200,134,31,0.15)" },
-  { bg: "rgba(224,85,74,0.08)", border: "rgba(224,85,74,0.25)", accent: "var(--s3)", pill: "rgba(224,85,74,0.15)" },
-  { bg: "rgba(212,168,67,0.08)", border: "rgba(212,168,67,0.25)", accent: "var(--s4)", pill: "rgba(212,168,67,0.15)" },
-  { bg: "rgba(61,159,92,0.08)", border: "rgba(61,159,92,0.25)", accent: "var(--s5)", pill: "rgba(61,159,92,0.15)" },
-  { bg: "rgba(74,200,184,0.08)", border: "rgba(74,200,184,0.25)", accent: "var(--s6)", pill: "rgba(74,200,184,0.15)" },
+  { bg: "var(--card)", border: "var(--line)", accent: "var(--muted2)", pill: "var(--card3)" },
+  { bg: "var(--card)", border: "var(--line)", accent: "var(--muted2)", pill: "var(--card3)" },
+  { bg: "var(--card)", border: "var(--line)", accent: "var(--muted2)", pill: "var(--card3)" },
+  { bg: "var(--card)", border: "var(--line)", accent: "var(--muted2)", pill: "var(--card3)" },
+  { bg: "var(--card)", border: "var(--line)", accent: "var(--muted2)", pill: "var(--card3)" },
+  { bg: "var(--card)", border: "var(--line)", accent: "var(--muted2)", pill: "var(--card3)" },
+  { bg: "var(--card)", border: "var(--line)", accent: "var(--muted2)", pill: "var(--card3)" },
 ];
 
 const STATUS_LABELS: Record<string, string> = {
