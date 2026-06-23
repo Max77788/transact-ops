@@ -24,15 +24,16 @@ type Deal = {
   stage_history?: { id: string; stage_idx: number; entered_at: string; exited_at?: string }[];
 };
 
-// ── Color palette for stage columns (neutral gray) ──
+// ── Color palette for stage columns (dark professional, CSS vars) ──
+// Using var(--s0) through var(--s6) from globals.css
 const STAGE_COLORS = [
-  { bg: "#f1f3f5", border: "#ced4da", accent: "#495057" },
-  { bg: "#f1f3f5", border: "#ced4da", accent: "#495057" },
-  { bg: "#f1f3f5", border: "#ced4da", accent: "#495057" },
-  { bg: "#f1f3f5", border: "#ced4da", accent: "#495057" },
-  { bg: "#f1f3f5", border: "#ced4da", accent: "#495057" },
-  { bg: "#f1f3f5", border: "#ced4da", accent: "#495057" },
-  { bg: "#f1f3f5", border: "#ced4da", accent: "#495057" },
+  { bg: "rgba(155,138,255,0.08)", border: "rgba(155,138,255,0.25)", accent: "var(--s0)", pill: "rgba(155,138,255,0.15)" },
+  { bg: "rgba(74,144,217,0.08)", border: "rgba(74,144,217,0.25)", accent: "var(--s1)", pill: "rgba(74,144,217,0.15)" },
+  { bg: "rgba(200,134,31,0.08)", border: "rgba(200,134,31,0.25)", accent: "var(--s2)", pill: "rgba(200,134,31,0.15)" },
+  { bg: "rgba(224,85,74,0.08)", border: "rgba(224,85,74,0.25)", accent: "var(--s3)", pill: "rgba(224,85,74,0.15)" },
+  { bg: "rgba(212,168,67,0.08)", border: "rgba(212,168,67,0.25)", accent: "var(--s4)", pill: "rgba(212,168,67,0.15)" },
+  { bg: "rgba(61,159,92,0.08)", border: "rgba(61,159,92,0.25)", accent: "var(--s5)", pill: "rgba(61,159,92,0.15)" },
+  { bg: "rgba(74,200,184,0.08)", border: "rgba(74,200,184,0.25)", accent: "var(--s6)", pill: "rgba(74,200,184,0.15)" },
 ];
 
 const STATUS_LABELS: Record<string, string> = {
@@ -451,7 +452,7 @@ export default function PipelineClient({
                     </span>
                   </div>
                   {stage.description && (
-                    <p className="text-lg mt-1 font-bold" style={{ color: "#495057" }}>{stage.description}</p>
+                    <p className="text-lg mt-1 font-bold" style={{ color: "var(--muted)" }}>{stage.description}</p>
                   )}
                 </div>
 
@@ -467,9 +468,9 @@ export default function PipelineClient({
                         onClick={() => setSelectedDealId(deal.id)}
                         className="p-3 rounded-lg cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg border-[3px]"
                         style={{
-                          backgroundColor: "#ffffff",
-                          borderColor: daysInStage > 14 ? "#e03131" : "#dee2e6",
-                          boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+                          backgroundColor: "var(--card)",
+                          borderColor: daysInStage > 14 ? "var(--red)" : "var(--line)",
+                          boxShadow: "var(--shadow)",
                         }}
                       >
                         <p className="text-lg font-bold leading-snug" style={{ color: "var(--ink)" }}>
