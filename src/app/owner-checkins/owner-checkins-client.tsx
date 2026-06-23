@@ -53,24 +53,24 @@ function AddCheckinModal({ onClose, onCreated }: { onClose: () => void; onCreate
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.6)" }} onClick={onClose}>
-      <div className="rounded-xl p-6 w-full max-w-md" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }} onClick={(e) => e.stopPropagation()}>
+      <div className="rounded-xl p-6 w-full max-w-md" style={{ backgroundColor: "var(--card)", border: "1px solid var(--line)" }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold" style={{ color: "var(--text)" }}>Schedule Check-in</h3>
-          <button onClick={onClose} style={{ color: "var(--text3)" }}><X size={20} /></button>
+          <h3 className="text-lg font-bold" style={{ color: "var(--ink)" }}>Schedule Check-in</h3>
+          <button onClick={onClose} style={{ color: "var(--muted2)" }}><X size={20} /></button>
         </div>
         <div className="space-y-3">
-          <select className="w-full rounded-lg px-3 py-2.5 text-lg border font-bold" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} value={ownerId} onChange={(e) => setOwnerId(e.target.value)}>
+          <select className="w-full rounded-lg px-3 py-2.5 text-lg border font-bold" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} value={ownerId} onChange={(e) => setOwnerId(e.target.value)}>
             <option value="">Select owner *</option>
             {owners.map((o: any) => (
               <option key={o.id} value={o.id}>{o.full_name} - {o.property_address}</option>
             ))}
           </select>
-          <input className="w-full rounded-lg px-3 py-2.5 text-lg border font-bold" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} type="date" value={scheduledDate} onChange={(e) => setScheduledDate(e.target.value)} />
-          <input className="w-full rounded-lg px-3 py-2.5 text-lg border font-bold" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} type="time" value={scheduledTime} onChange={(e) => setScheduledTime(e.target.value)} />
-          <input className="w-full rounded-lg px-3 py-2.5 text-lg border font-bold" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} placeholder="Booking link (optional)" value={bookingLink} onChange={(e) => setBookingLink(e.target.value)} />
+          <input className="w-full rounded-lg px-3 py-2.5 text-lg border font-bold" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} type="date" value={scheduledDate} onChange={(e) => setScheduledDate(e.target.value)} />
+          <input className="w-full rounded-lg px-3 py-2.5 text-lg border font-bold" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} type="time" value={scheduledTime} onChange={(e) => setScheduledTime(e.target.value)} />
+          <input className="w-full rounded-lg px-3 py-2.5 text-lg border font-bold" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} placeholder="Booking link (optional)" value={bookingLink} onChange={(e) => setBookingLink(e.target.value)} />
         </div>
         {error && <p className="text-lg font-bold mt-3" style={{ color: "#e03131" }}>{error}</p>}
-        <button className="w-full mt-4 rounded-lg py-2.5 text-lg font-bold" style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }} onClick={submit} disabled={submitting}>
+        <button className="w-full mt-4 rounded-lg py-2.5 text-lg font-bold" style={{ backgroundColor: "var(--accent)", color: "var(--paper)" }} onClick={submit} disabled={submitting}>
           {submitting ? "Scheduling..." : "Schedule Check-in"}
         </button>
       </div>
@@ -108,15 +108,15 @@ function CheckinSlideover({ checkin, onClose, onStatusUpdate }: {
   return (
     <div className="fixed inset-0 z-40 flex">
       <div className="absolute inset-0" style={{ backgroundColor: "rgba(0,0,0,0.4)" }} onClick={onClose} />
-      <div className="relative ml-auto w-full max-w-lg h-full overflow-y-auto shadow-2xl" style={{ backgroundColor: "var(--bg)", borderLeft: "1px solid var(--border)" }}>
+      <div className="relative ml-auto w-full max-w-lg h-full overflow-y-auto shadow-2xl" style={{ backgroundColor: "var(--paper)", borderLeft: "1px solid var(--line)" }}>
         {/* Header */}
-        <div className="sticky top-0 z-10 p-5 border-b-[3px]" style={{ backgroundColor: "var(--bg)", borderColor: "var(--border)" }}>
+        <div className="sticky top-0 z-10 p-5 border-b-[3px]" style={{ backgroundColor: "var(--paper)", borderColor: "var(--line)" }}>
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-lg font-bold" style={{ color: "var(--text)" }}>{owner?.full_name || "Owner"}</h2>
+              <h2 className="text-lg font-bold" style={{ color: "var(--ink)" }}>{owner?.full_name || "Owner"}</h2>
               <p className="text-lg font-bold" style={{ color: "var(--accent)" }}>{owner?.property_address}</p>
             </div>
-            <button onClick={onClose} className="p-2 rounded-lg hover:opacity-70" style={{ backgroundColor: "var(--surface3)", color: "var(--text)" }}>
+            <button onClick={onClose} className="p-2 rounded-lg hover:opacity-70" style={{ backgroundColor: "var(--card3)", color: "var(--ink)" }}>
               <X size={20} />
             </button>
           </div>
@@ -133,14 +133,14 @@ function CheckinSlideover({ checkin, onClose, onStatusUpdate }: {
               {checkin.scheduled_time && ` at ${checkin.scheduled_time}`}
             </span>
           </div>
-          {owner?.email && <p className="text-lg mt-2 font-bold" style={{ color: "var(--text2)" }}><Mail size={16} className="inline mr-1" />{owner.email}</p>}
-          {owner?.phone && <p className="text-lg font-bold" style={{ color: "var(--text2)" }}><Phone size={16} className="inline mr-1" />{owner.phone}</p>}
+          {owner?.email && <p className="text-lg mt-2 font-bold" style={{ color: "var(--muted)" }}><Mail size={16} className="inline mr-1" />{owner.email}</p>}
+          {owner?.phone && <p className="text-lg font-bold" style={{ color: "var(--muted)" }}><Phone size={16} className="inline mr-1" />{owner.phone}</p>}
         </div>
 
         <div className="p-5 space-y-6">
           {/* Status actions */}
           <section>
-            <h3 className="text-lg font-bold mb-3" style={{ color: "var(--text)" }}>Update Status</h3>
+            <h3 className="text-lg font-bold mb-3" style={{ color: "var(--ink)" }}>Update Status</h3>
             <div className="flex flex-wrap gap-2">
               {checkin.status !== "scheduled" && (
                 <button onClick={() => updateStatus("scheduled")} disabled={updating}
@@ -165,9 +165,9 @@ function CheckinSlideover({ checkin, onClose, onStatusUpdate }: {
 
           {/* Notes */}
           <section>
-            <h3 className="text-lg font-bold mb-3" style={{ color: "var(--text)" }}>Notes</h3>
+            <h3 className="text-lg font-bold mb-3" style={{ color: "var(--ink)" }}>Notes</h3>
             <div className="p-4 rounded-lg border-[3px] text-lg font-bold" style={{
-              backgroundColor: "var(--surface)", borderColor: "var(--border)", color: "var(--text2)",
+              backgroundColor: "var(--card)", borderColor: "var(--line)", color: "var(--muted)",
               minHeight: "80px",
             }}>
               {checkin.raw_notes || checkin.combined_summary || checkin.ai_summary || "No notes yet."}
@@ -189,7 +189,7 @@ function CheckinSlideover({ checkin, onClose, onStatusUpdate }: {
           {/* Booking link */}
           {checkin.booking_link && (
             <section>
-              <h3 className="text-lg font-bold mb-3" style={{ color: "var(--text)" }}>Booking Link</h3>
+              <h3 className="text-lg font-bold mb-3" style={{ color: "var(--ink)" }}>Booking Link</h3>
               <a href={checkin.booking_link} target="_blank" rel="noopener noreferrer"
                 className="text-lg font-bold underline" style={{ color: "#4c6ef5" }}>
                 {checkin.booking_link}
@@ -200,7 +200,7 @@ function CheckinSlideover({ checkin, onClose, onStatusUpdate }: {
           {/* Recording */}
           {checkin.recording_url && (
             <section>
-              <h3 className="text-lg font-bold mb-3" style={{ color: "var(--text)" }}>Recording</h3>
+              <h3 className="text-lg font-bold mb-3" style={{ color: "var(--ink)" }}>Recording</h3>
               <a href={checkin.recording_url} target="_blank" rel="noopener noreferrer"
                 className="text-lg font-bold underline" style={{ color: "#4c6ef5" }}>
                 Open Recording
@@ -266,7 +266,7 @@ export default function OwnerCheckinsClient({ initialCheckins }: { initialChecki
   return (
     <div className="px-4 sm:px-6 pt-4 pb-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold" style={{ color: "var(--text)" }}>
+        <h2 className="text-xl font-bold" style={{ color: "var(--ink)" }}>
           Owner Check-ins · {checkins.length} total
         </h2>
         <button
@@ -304,7 +304,7 @@ export default function OwnerCheckinsClient({ initialCheckins }: { initialChecki
         </h3>
         {awaiting.length === 0 ? (
           <p className="text-lg font-bold py-6 text-center rounded-lg border-[3px] border-dashed"
-            style={{ color: "var(--text3)", borderColor: "var(--border)" }}>
+            style={{ color: "var(--muted2)", borderColor: "var(--line)" }}>
             No owners awaiting booking
           </p>
         ) : (
@@ -312,13 +312,13 @@ export default function OwnerCheckinsClient({ initialCheckins }: { initialChecki
             {awaiting.map((c) => (
               <button key={c.id} onClick={() => setSelectedId(c.id)}
                 className="w-full text-left p-4 rounded-lg border-[3px] transition-all hover:shadow-md"
-                style={{ backgroundColor: "var(--surface)", borderColor: "#b8ccff" }}>
+                style={{ backgroundColor: "var(--card)", borderColor: "#b8ccff" }}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-lg font-bold" style={{ color: "var(--text)" }}>
+                    <p className="text-lg font-bold" style={{ color: "var(--ink)" }}>
                       {c.owner?.full_name || "Unknown"}
                     </p>
-                    <p className="text-lg font-bold" style={{ color: "var(--text2)" }}>
+                    <p className="text-lg font-bold" style={{ color: "var(--muted)" }}>
                       {c.owner?.property_address} · {c.scheduled_date}
                       {c.scheduled_time && ` at ${c.scheduled_time}`}
                     </p>
@@ -341,7 +341,7 @@ export default function OwnerCheckinsClient({ initialCheckins }: { initialChecki
         </h3>
         {scheduled.length === 0 ? (
           <p className="text-lg font-bold py-6 text-center rounded-lg border-[3px] border-dashed"
-            style={{ color: "var(--text3)", borderColor: "var(--border)" }}>
+            style={{ color: "var(--muted2)", borderColor: "var(--line)" }}>
             No check-ins scheduled yet
           </p>
         ) : (
@@ -352,13 +352,13 @@ export default function OwnerCheckinsClient({ initialCheckins }: { initialChecki
               return (
                 <button key={c.id} onClick={() => setSelectedId(c.id)}
                   className="w-full text-left p-4 rounded-lg border-[3px] transition-all hover:shadow-md"
-                  style={{ backgroundColor: isSoon ? "#fff4e6" : "var(--surface)", borderColor: "#ffc078" }}>
+                  style={{ backgroundColor: isSoon ? "#fff4e6" : "var(--card)", borderColor: "#ffc078" }}>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-lg font-bold" style={{ color: "var(--text)" }}>
+                      <p className="text-lg font-bold" style={{ color: "var(--ink)" }}>
                         {c.owner?.full_name || "Unknown"}
                       </p>
-                      <p className="text-lg font-bold" style={{ color: "var(--text2)" }}>
+                      <p className="text-lg font-bold" style={{ color: "var(--muted)" }}>
                         {c.owner?.property_address} · {c.scheduled_date}
                         {c.scheduled_time && ` at ${c.scheduled_time}`}
                       </p>
@@ -390,7 +390,7 @@ export default function OwnerCheckinsClient({ initialCheckins }: { initialChecki
         </h3>
         {completed.length === 0 ? (
           <p className="text-lg font-bold py-6 text-center rounded-lg border-[3px] border-dashed"
-            style={{ color: "var(--text3)", borderColor: "var(--border)" }}>
+            style={{ color: "var(--muted2)", borderColor: "var(--line)" }}>
             No completed check-ins yet
           </p>
         ) : (
@@ -398,10 +398,10 @@ export default function OwnerCheckinsClient({ initialCheckins }: { initialChecki
             {completed.map((c) => (
               <button key={c.id} onClick={() => setSelectedId(c.id)}
                 className="w-full text-left p-4 rounded-lg border-[3px] transition-all hover:shadow-md"
-                style={{ backgroundColor: "var(--surface)", borderColor: "#96f2d7" }}>
+                style={{ backgroundColor: "var(--card)", borderColor: "#96f2d7" }}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-lg font-bold" style={{ color: "var(--text)" }}>
+                    <p className="text-lg font-bold" style={{ color: "var(--ink)" }}>
                       {c.owner?.full_name || "Unknown"}
                       <span className="ml-2 text-lg font-bold px-2 py-1 rounded-lg border-[3px]" style={{
                         backgroundColor: c.status === "noshow" ? "#ffe3e3" : "#e6fcf5",
@@ -411,11 +411,11 @@ export default function OwnerCheckinsClient({ initialCheckins }: { initialChecki
                         {c.status === "noshow" ? "No-Show" : "Done"}
                       </span>
                     </p>
-                    <p className="text-lg font-bold" style={{ color: "var(--text2)" }}>
+                    <p className="text-lg font-bold" style={{ color: "var(--muted)" }}>
                       {c.owner?.property_address} · {c.scheduled_date}
                     </p>
                     {c.combined_summary && (
-                      <p className="text-lg mt-1 line-clamp-2" style={{ color: "var(--text3)" }}>
+                      <p className="text-lg mt-1 line-clamp-2" style={{ color: "var(--muted2)" }}>
                         {c.combined_summary.slice(0, 120)}...
                       </p>
                     )}

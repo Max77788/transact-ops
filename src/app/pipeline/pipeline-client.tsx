@@ -81,28 +81,28 @@ function AddDealModal({ stages, onClose, onCreated }: {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.6)" }} onClick={onClose}>
-      <div className="rounded-xl p-6 w-full max-w-md" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }} onClick={(e) => e.stopPropagation()}>
+      <div className="rounded-xl p-6 w-full max-w-md" style={{ backgroundColor: "var(--card)", border: "1px solid var(--line)" }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold" style={{ color: "var(--text)" }}>Add Deal</h3>
-          <button onClick={onClose} style={{ color: "var(--text3)" }}><X size={20} /></button>
+          <h3 className="text-lg font-bold" style={{ color: "var(--ink)" }}>Add Deal</h3>
+          <button onClick={onClose} style={{ color: "var(--muted2)" }}><X size={20} /></button>
         </div>
         <div className="space-y-3">
-          <input className="w-full rounded-lg px-3 py-2.5 text-lg border font-bold" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} placeholder="Property address *" value={address} onChange={(e) => setAddress(e.target.value)} />
-          <input className="w-full rounded-lg px-3 py-2.5 text-lg border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} placeholder="Client name *" value={clientName} onChange={(e) => setClientName(e.target.value)} />
-          <input className="w-full rounded-lg px-3 py-2.5 text-lg border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} placeholder="Agent *" value={agent} onChange={(e) => setAgent(e.target.value)} />
-          <input className="w-full rounded-lg px-3 py-2.5 text-lg border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} placeholder="Transaction Coordinator (TC)" value={tc} onChange={(e) => setTc(e.target.value)} />
+          <input className="w-full rounded-lg px-3 py-2.5 text-lg border font-bold" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} placeholder="Property address *" value={address} onChange={(e) => setAddress(e.target.value)} />
+          <input className="w-full rounded-lg px-3 py-2.5 text-lg border" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} placeholder="Client name *" value={clientName} onChange={(e) => setClientName(e.target.value)} />
+          <input className="w-full rounded-lg px-3 py-2.5 text-lg border" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} placeholder="Agent *" value={agent} onChange={(e) => setAgent(e.target.value)} />
+          <input className="w-full rounded-lg px-3 py-2.5 text-lg border" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} placeholder="Transaction Coordinator (TC)" value={tc} onChange={(e) => setTc(e.target.value)} />
           <div className="flex gap-3">
-            <input className="flex-1 rounded-lg px-3 py-2.5 text-lg border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} placeholder="Price" type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
-            <select className="flex-1 rounded-lg px-3 py-2.5 text-lg border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} value={type} onChange={(e) => setType(e.target.value)}>
+            <input className="flex-1 rounded-lg px-3 py-2.5 text-lg border" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} placeholder="Price" type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
+            <select className="flex-1 rounded-lg px-3 py-2.5 text-lg border" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} value={type} onChange={(e) => setType(e.target.value)}>
               <option value="sale">Sale</option><option value="lease">Lease</option>
             </select>
           </div>
-          <select className="w-full rounded-lg px-3 py-2.5 text-lg border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} value={stageIdx} onChange={(e) => setStageIdx(Number(e.target.value))}>
+          <select className="w-full rounded-lg px-3 py-2.5 text-lg border" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} value={stageIdx} onChange={(e) => setStageIdx(Number(e.target.value))}>
             {stages.map((s) => (<option key={s.id} value={s.idx}>{s.name}</option>))}
           </select>
         </div>
         {error && <p className="text-lg font-bold mt-3" style={{ color: "#e03131" }}>{error}</p>}
-        <button className="w-full mt-4 rounded-lg py-2.5 text-lg font-bold transition-opacity hover:opacity-90" style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }} onClick={submit} disabled={submitting}>
+        <button className="w-full mt-4 rounded-lg py-2.5 text-lg font-bold transition-opacity hover:opacity-90" style={{ backgroundColor: "var(--accent)", color: "var(--paper)" }} onClick={submit} disabled={submitting}>
           {submitting ? "Creating..." : "Create Deal"}
         </button>
       </div>
@@ -173,20 +173,20 @@ function DealSlideover({ deal, stages, onClose, onAdvance }: {
       <div className="absolute inset-0" style={{ backgroundColor: "rgba(0,0,0,0.4)" }} onClick={onClose} />
       {/* Panel */}
       <div className="relative ml-auto w-full max-w-lg h-full overflow-y-auto shadow-2xl" style={{
-        backgroundColor: "var(--bg)", borderLeft: "1px solid var(--border)",
+        backgroundColor: "var(--paper)", borderLeft: "1px solid var(--line)",
       }}>
         {/* Header */}
         <div className="sticky top-0 z-10 p-5 border-b-[3px]" style={{
-          backgroundColor: "var(--bg)", borderColor: "var(--border)",
+          backgroundColor: "var(--paper)", borderColor: "var(--line)",
         }}>
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">
-              <h2 className="text-lg font-bold" style={{ color: "var(--text)" }}>{deal.address}</h2>
+              <h2 className="text-lg font-bold" style={{ color: "var(--ink)" }}>{deal.address}</h2>
               <p className="text-lg font-bold" style={{ color: "var(--accent)" }}>
                 {deal.client_name} · {deal.agent}
               </p>
             </div>
-            <button onClick={onClose} className="p-2 rounded-lg hover:opacity-70" style={{ backgroundColor: "var(--surface3)", color: "var(--text)" }}>
+            <button onClick={onClose} className="p-2 rounded-lg hover:opacity-70" style={{ backgroundColor: "var(--card3)", color: "var(--ink)" }}>
               <X size={20} />
             </button>
           </div>
@@ -222,7 +222,7 @@ function DealSlideover({ deal, stages, onClose, onAdvance }: {
         <div className="p-5 space-y-6">
           {/* Stage advancement */}
           <section>
-            <h3 className="text-lg font-bold mb-3" style={{ color: "var(--text)" }}>Stage Progress</h3>
+            <h3 className="text-lg font-bold mb-3" style={{ color: "var(--ink)" }}>Stage Progress</h3>
             <div className="flex items-center gap-2 flex-wrap">
               {stages.map((s, i) => {
                 const isCurrent = s.idx === deal.stage_idx;
@@ -234,9 +234,9 @@ function DealSlideover({ deal, stages, onClose, onAdvance }: {
                     onClick={() => isPast && handleMoveBack(s.idx)}
                     className="text-lg font-bold px-3 py-2 rounded-lg border-[3px] transition-all"
                     style={{
-                      backgroundColor: isCurrent ? "var(--accent)" : isPast ? "#e6fcf5" : "var(--surface3)",
-                      color: isCurrent ? "#fff" : isPast ? "#0ca678" : "var(--text3)",
-                      borderColor: isCurrent ? "var(--accent)" : isPast ? "#0ca678" : "var(--border)",
+                      backgroundColor: isCurrent ? "var(--accent)" : isPast ? "#e6fcf5" : "var(--card3)",
+                      color: isCurrent ? "#fff" : isPast ? "#0ca678" : "var(--muted2)",
+                      borderColor: isCurrent ? "var(--accent)" : isPast ? "#0ca678" : "var(--line)",
                       cursor: isPast ? "pointer" : "default",
                       opacity: isPast ? 1 : 0.6,
                     }}
@@ -265,7 +265,7 @@ function DealSlideover({ deal, stages, onClose, onAdvance }: {
           {/* Stage checklist */}
           {currentStageSteps.length > 0 && (
             <section>
-              <h3 className="text-lg font-bold mb-3" style={{ color: "var(--text)" }}>
+              <h3 className="text-lg font-bold mb-3" style={{ color: "var(--ink)" }}>
                 Checklist · {currentStage?.name}
               </h3>
               <div className="space-y-2">
@@ -274,17 +274,17 @@ function DealSlideover({ deal, stages, onClose, onAdvance }: {
                   return (
                     <div key={step.id} className="flex items-center gap-3 p-3 rounded-lg border-[3px]"
                       style={{
-                        backgroundColor: done ? "#e6fcf5" : "var(--surface)",
-                        borderColor: done ? "#0ca678" : "var(--border)",
+                        backgroundColor: done ? "#e6fcf5" : "var(--card)",
+                        borderColor: done ? "#0ca678" : "var(--line)",
                       }}
                     >
                       {done ? (
                         <CheckCircle size={20} style={{ color: "#0ca678" }} />
                       ) : (
-                        <Circle size={20} style={{ color: "var(--text3)" }} />
+                        <Circle size={20} style={{ color: "var(--muted2)" }} />
                       )}
                       <span className="text-lg font-bold" style={{
-                        color: done ? "#0ca678" : "var(--text)",
+                        color: done ? "#0ca678" : "var(--ink)",
                         textDecoration: done ? "line-through" : "none",
                       }}>
                         {step.name}
@@ -299,7 +299,7 @@ function DealSlideover({ deal, stages, onClose, onAdvance }: {
           {/* Stage history */}
           {history.length > 0 && (
             <section>
-              <h3 className="text-lg font-bold mb-3" style={{ color: "var(--text)" }}>Stage History</h3>
+              <h3 className="text-lg font-bold mb-3" style={{ color: "var(--ink)" }}>Stage History</h3>
               <div className="space-y-2">
                 {history.map((h) => {
                   const stageName = stages.find((s) => s.idx === h.stage_idx)?.name || `Stage ${h.stage_idx}`;
@@ -308,12 +308,12 @@ function DealSlideover({ deal, stages, onClose, onAdvance }: {
                     : null;
                   return (
                     <div key={h.id} className="flex items-center gap-3 p-3 rounded-lg border-[3px]" style={{
-                      backgroundColor: "var(--surface)", borderColor: "var(--border)",
+                      backgroundColor: "var(--card)", borderColor: "var(--line)",
                     }}>
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "var(--accent)" }} />
                       <div className="flex-1">
-                        <span className="text-lg font-bold" style={{ color: "var(--text)" }}>{stageName}</span>
-                        <span className="text-lg ml-2" style={{ color: "var(--text3)" }}>
+                        <span className="text-lg font-bold" style={{ color: "var(--ink)" }}>{stageName}</span>
+                        <span className="text-lg ml-2" style={{ color: "var(--muted2)" }}>
                           {formatDate(h.entered_at)}
                           {duration !== null && ` · ${duration}d`}
                         </span>
@@ -334,9 +334,9 @@ function DealSlideover({ deal, stages, onClose, onAdvance }: {
 
           {/* Notes */}
           <section>
-            <h3 className="text-lg font-bold mb-3" style={{ color: "var(--text)" }}>Notes</h3>
+            <h3 className="text-lg font-bold mb-3" style={{ color: "var(--ink)" }}>Notes</h3>
             <div className="p-4 rounded-lg border-[3px] text-lg font-bold" style={{
-              backgroundColor: "var(--surface)", borderColor: "var(--border)", color: "var(--text2)",
+              backgroundColor: "var(--card)", borderColor: "var(--line)", color: "var(--muted)",
               minHeight: "80px",
             }}>
               {deal.notes || "No notes yet."}
@@ -389,18 +389,18 @@ export default function PipelineClient({
     <div className="px-4 sm:px-6 pt-4 pb-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold" style={{ color: "var(--text)" }}>
+        <h2 className="text-xl font-bold" style={{ color: "var(--ink)" }}>
           Pipeline · {deals.length} deals
         </h2>
         <div className="flex items-center gap-2">
           {/* View toggle */}
-          <div className="flex rounded-lg border-[3px] overflow-hidden" style={{ borderColor: "var(--border)" }}>
+          <div className="flex rounded-lg border-[3px] overflow-hidden" style={{ borderColor: "var(--line)" }}>
             <button
               onClick={() => setViewMode("board")}
               className="px-3 py-2 text-lg font-bold transition-colors"
               style={{
-                backgroundColor: viewMode === "board" ? "var(--accent)" : "var(--surface)",
-                color: viewMode === "board" ? "#fff" : "var(--text)",
+                backgroundColor: viewMode === "board" ? "var(--accent)" : "var(--card)",
+                color: viewMode === "board" ? "#fff" : "var(--ink)",
               }}
             >
               <LayoutGrid size={18} className="inline mr-1" />Board
@@ -409,8 +409,8 @@ export default function PipelineClient({
               onClick={() => setViewMode("table")}
               className="px-3 py-2 text-lg font-bold transition-colors"
               style={{
-                backgroundColor: viewMode === "table" ? "var(--accent)" : "var(--surface)",
-                color: viewMode === "table" ? "#fff" : "var(--text)",
+                backgroundColor: viewMode === "table" ? "var(--accent)" : "var(--card)",
+                color: viewMode === "table" ? "#fff" : "var(--ink)",
               }}
             >
               <List size={18} className="inline mr-1" />Table
@@ -472,21 +472,21 @@ export default function PipelineClient({
                           boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
                         }}
                       >
-                        <p className="text-lg font-bold leading-snug" style={{ color: "var(--text)" }}>
+                        <p className="text-lg font-bold leading-snug" style={{ color: "var(--ink)" }}>
                           {deal.address}
                         </p>
                         <div className="flex items-center gap-2 mt-1.5">
                           <span className="text-lg font-bold" style={{ color: "var(--accent)" }}>
                             {deal.client_name}
                           </span>
-                          <span className="text-lg" style={{ color: "var(--text3)" }}>·</span>
-                          <span className="text-lg font-bold" style={{ color: "var(--text2)" }}>
+                          <span className="text-lg" style={{ color: "var(--muted2)" }}>·</span>
+                          <span className="text-lg font-bold" style={{ color: "var(--muted)" }}>
                             {deal.agent}
                           </span>
                           {deal.tc && (
                             <>
-                              <span className="text-lg" style={{ color: "var(--text3)" }}>·</span>
-                              <span className="text-lg font-bold" style={{ color: "var(--text3)" }} title="TC">
+                              <span className="text-lg" style={{ color: "var(--muted2)" }}>·</span>
+                              <span className="text-lg font-bold" style={{ color: "var(--muted2)" }} title="TC">
                                 TC: {deal.tc}
                               </span>
                             </>
@@ -525,7 +525,7 @@ export default function PipelineClient({
                     );
                   })}
                   {stageDeals.length === 0 && (
-                    <div className="text-lg font-bold text-center py-8" style={{ color: "var(--text3)" }}>
+                    <div className="text-lg font-bold text-center py-8" style={{ color: "var(--muted2)" }}>
                       No deals
                     </div>
                   )}
@@ -538,25 +538,25 @@ export default function PipelineClient({
 
       {/* Table View */}
       {viewMode === "table" && (
-        <div className="rounded-xl overflow-hidden border-[3px]" style={{ borderColor: "var(--border)" }}>
+        <div className="rounded-xl overflow-hidden border-[3px]" style={{ borderColor: "var(--line)" }}>
           <div className="overflow-x-auto">
             <table className="w-full" style={{ borderCollapse: "collapse" }}>
               <thead>
-                <tr style={{ borderBottom: "3px solid var(--border)", backgroundColor: "var(--surface)" }}>
-                  <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--text)" }}>Address</th>
-                  <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--text)" }}>Client</th>
-                  <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--text)" }}>Agent</th>
-                  <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--text)" }}>TC</th>
-                  <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--text)" }}>Stage</th>
-                  <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--text)" }}>Price</th>
-                  <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--text)" }}>Days</th>
-                  <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--text)" }}>Status</th>
+                <tr style={{ borderBottom: "3px solid var(--line)", backgroundColor: "var(--card)" }}>
+                  <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--ink)" }}>Address</th>
+                  <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--ink)" }}>Client</th>
+                  <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--ink)" }}>Agent</th>
+                  <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--ink)" }}>TC</th>
+                  <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--ink)" }}>Stage</th>
+                  <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--ink)" }}>Price</th>
+                  <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--ink)" }}>Days</th>
+                  <th className="text-left px-4 py-3 text-lg font-bold" style={{ color: "var(--ink)" }}>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {deals.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="text-center py-10 text-lg font-bold" style={{ color: "var(--text3)" }}>
+                    <td colSpan={8} className="text-center py-10 text-lg font-bold" style={{ color: "var(--muted2)" }}>
                       No deals in pipeline yet. Click "Add Deal" to create one.
                     </td>
                   </tr>
@@ -571,17 +571,17 @@ export default function PipelineClient({
                         key={deal.id}
                         onClick={() => setSelectedDealId(deal.id)}
                         className="cursor-pointer transition-colors hover:bg-opacity-50 border-b-[3px]"
-                        style={{ borderColor: "var(--border)", backgroundColor: "#ffffff" }}
-                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--surface)"; }}
+                        style={{ borderColor: "var(--line)", backgroundColor: "#ffffff" }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--card)"; }}
                         onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#ffffff"; }}
                       >
-                        <td className="px-4 py-3 text-lg font-bold" style={{ color: "var(--text)" }}>{deal.address}</td>
+                        <td className="px-4 py-3 text-lg font-bold" style={{ color: "var(--ink)" }}>{deal.address}</td>
                         <td className="px-4 py-3 text-lg font-bold" style={{ color: "var(--accent)" }}>{deal.client_name}</td>
-                        <td className="px-4 py-3 text-lg font-bold" style={{ color: "var(--text2)" }}>{deal.agent}</td>
-                        <td className="px-4 py-3 text-lg font-bold" style={{ color: "var(--text3)" }}>{deal.tc || "—"}</td>
+                        <td className="px-4 py-3 text-lg font-bold" style={{ color: "var(--muted)" }}>{deal.agent}</td>
+                        <td className="px-4 py-3 text-lg font-bold" style={{ color: "var(--muted2)" }}>{deal.tc || "—"}</td>
                         <td className="px-4 py-3">
                           <span className="text-lg font-bold px-3 py-1.5 rounded-lg border-[3px]"
-                            style={{ borderColor: "var(--border)", color: "var(--text)" }}
+                            style={{ borderColor: "var(--line)", color: "var(--ink)" }}
                           >{stageName}</span>
                         </td>
                         <td className="px-4 py-3 text-lg font-bold" style={{ color: "#0ca678" }}>
@@ -596,9 +596,9 @@ export default function PipelineClient({
                         </td>
                         <td className="px-4 py-3">
                           <span className="text-lg font-bold px-3 py-1.5 rounded-lg border-[3px]" style={{
-                            backgroundColor: deal.status === "active" ? "#e6fcf5" : "var(--surface3)",
-                            borderColor: deal.status === "active" ? "#0ca678" : "var(--border)",
-                            color: deal.status === "active" ? "#0ca678" : "var(--text2)",
+                            backgroundColor: deal.status === "active" ? "#e6fcf5" : "var(--card3)",
+                            borderColor: deal.status === "active" ? "#0ca678" : "var(--line)",
+                            color: deal.status === "active" ? "#0ca678" : "var(--muted)",
                           }}>{STATUS_LABELS[deal.status] || deal.status}</span>
                         </td>
                       </tr>

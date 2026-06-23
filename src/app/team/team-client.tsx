@@ -57,22 +57,22 @@ function AddMemberModal({ onClose, onCreated }: { onClose: () => void; onCreated
   };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.6)" }} onClick={onClose}>
-      <div className="rounded-xl p-6 w-full max-w-md" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }} onClick={(e) => e.stopPropagation()}>
+      <div className="rounded-xl p-6 w-full max-w-md" style={{ backgroundColor: "var(--card)", border: "1px solid var(--line)" }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold" style={{ color: "var(--text)", fontFamily: "Instrument Serif, serif" }}>Add Team Member</h3>
-          <button onClick={onClose} style={{ color: "var(--text3)" }}><X size={18} /></button>
+          <h3 className="text-sm font-semibold" style={{ color: "var(--ink)", fontFamily: "Instrument Serif, serif" }}>Add Team Member</h3>
+          <button onClick={onClose} style={{ color: "var(--muted2)" }}><X size={18} /></button>
         </div>
         <div className="space-y-3">
-          <input className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} placeholder="Full name *" value={fullName} onChange={(e) => setFullName(e.target.value)} />
-          <select className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} value={role} onChange={(e) => setRole(e.target.value)}>
+          <input className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} placeholder="Full name *" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+          <select className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} value={role} onChange={(e) => setRole(e.target.value)}>
             <option value="agent">Agent</option><option value="lead">Lead</option><option value="tc">Coordinator</option><option value="tm">Manager</option><option value="admin">Admin</option><option value="staff">Staff</option>
           </select>
-          <select className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} value={location} onChange={(e) => setLocation(e.target.value)}>
+          <select className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} value={location} onChange={(e) => setLocation(e.target.value)}>
             <option value="US">US</option><option value="India">India</option>
           </select>
         </div>
-        {error && <p className="text-xs mt-3" style={{ color: "var(--high)" }}>{error}</p>}
-        <button className="w-full mt-4 rounded-lg py-2.5 text-sm font-semibold" style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }} onClick={submit} disabled={submitting}>
+        {error && <p className="text-xs mt-3" style={{ color: "var(--red)" }}>{error}</p>}
+        <button className="w-full mt-4 rounded-lg py-2.5 text-sm font-semibold" style={{ backgroundColor: "var(--accent)", color: "var(--paper)" }} onClick={submit} disabled={submitting}>
           {submitting ? "Adding..." : "Add Member"}
         </button>
       </div>
@@ -110,7 +110,7 @@ export function TeamClient({ initialProfiles }: { initialProfiles: Profile[] }) 
   if (profiles.length === 0) {
     return (
       <div className="px-4 sm:px-6 pt-4 pb-6">
-        <div className="px-4 py-8 text-center text-sm" style={{ color: "var(--text3)" }}>
+        <div className="px-4 py-8 text-center text-sm" style={{ color: "var(--muted2)" }}>
           No team members yet. Add users in Supabase Auth.
         </div>
       </div>
@@ -121,13 +121,13 @@ export function TeamClient({ initialProfiles }: { initialProfiles: Profile[] }) 
     <div className="px-4 sm:px-6 pt-4 pb-6">
       {/* Header with Add button */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg" style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)" }}>
+        <h2 className="text-lg" style={{ fontFamily: "Instrument Serif, serif", color: "var(--ink)" }}>
           Team · {profiles.length} members
         </h2>
         <button
           onClick={() => setShowAdd(true)}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
-          style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }}
+          style={{ backgroundColor: "var(--accent)", color: "var(--paper)" }}
         >
           <Plus size={14} /> Add Member
         </button>
@@ -142,7 +142,7 @@ export function TeamClient({ initialProfiles }: { initialProfiles: Profile[] }) 
             <div
               key={p.id}
               className={cn("rounded-lg p-4", !p.active && "opacity-40")}
-              style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}
+              style={{ backgroundColor: "var(--card)", border: "1px solid var(--line)" }}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 min-w-0">
@@ -159,12 +159,12 @@ export function TeamClient({ initialProfiles }: { initialProfiles: Profile[] }) 
                     {initials}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium truncate" style={{ color: "var(--text)" }}>
+                    <p className="text-sm font-medium truncate" style={{ color: "var(--ink)" }}>
                       {p.full_name}
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <RolePill role={p.role} />
-                      <span className="flex items-center gap-1 text-[11px]" style={{ color: "var(--text2)" }}>
+                      <span className="flex items-center gap-1 text-[11px]" style={{ color: "var(--muted)" }}>
                         <MapPin size={10} />
                         {p.location || "—"}
                       </span>
@@ -174,7 +174,7 @@ export function TeamClient({ initialProfiles }: { initialProfiles: Profile[] }) 
                 <button
                   onClick={() => toggleActive(p.id)}
                   className="shrink-0 p-1"
-                  style={{ color: p.active ? "var(--accent)" : "var(--text3)" }}
+                  style={{ color: p.active ? "var(--accent)" : "var(--muted2)" }}
                 >
                   {p.active ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
                 </button>
@@ -187,14 +187,14 @@ export function TeamClient({ initialProfiles }: { initialProfiles: Profile[] }) 
       {/* Desktop: table */}
       <div
         className="hidden sm:block rounded-lg overflow-hidden"
-        style={{ backgroundColor: "var(--surface)" }}
+        style={{ backgroundColor: "var(--card)" }}
       >
         <div
           className="flex items-center px-4 py-2.5 text-[10px] font-medium uppercase tracking-wider"
           style={{
-            color: "var(--text3)",
+            color: "var(--muted2)",
             fontFamily: "DM Mono, monospace",
-            borderBottom: "1px solid var(--border)",
+            borderBottom: "1px solid var(--line)",
           }}
         >
           <span className="flex-1">Name</span>
@@ -211,7 +211,7 @@ export function TeamClient({ initialProfiles }: { initialProfiles: Profile[] }) 
             <div
               key={p.id}
               className={cn("flex items-center px-4 py-3 transition-colors", !p.active && "opacity-40")}
-              style={{ borderBottom: "1px solid var(--border)" }}
+              style={{ borderBottom: "1px solid var(--line)" }}
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <div
@@ -226,7 +226,7 @@ export function TeamClient({ initialProfiles }: { initialProfiles: Profile[] }) 
                 >
                   {initials}
                 </div>
-                <span className="text-sm font-medium truncate" style={{ color: "var(--text)" }}>
+                <span className="text-sm font-medium truncate" style={{ color: "var(--ink)" }}>
                   {p.full_name}
                 </span>
               </div>
@@ -236,8 +236,8 @@ export function TeamClient({ initialProfiles }: { initialProfiles: Profile[] }) 
               </div>
 
               <div className="w-[100px]">
-                <span className="flex items-center gap-1 text-[11px]" style={{ color: "var(--text2)" }}>
-                  <MapPin size={10} style={{ color: "var(--text3)" }} />
+                <span className="flex items-center gap-1 text-[11px]" style={{ color: "var(--muted)" }}>
+                  <MapPin size={10} style={{ color: "var(--muted2)" }} />
                   {p.location || "—"}
                 </span>
               </div>
@@ -246,13 +246,13 @@ export function TeamClient({ initialProfiles }: { initialProfiles: Profile[] }) 
                 <span
                   className="inline-flex items-center gap-1.5 text-[11px] font-medium"
                   style={{
-                    color: p.active ? "var(--accent)" : "var(--text3)",
+                    color: p.active ? "var(--accent)" : "var(--muted2)",
                     fontFamily: "DM Mono, monospace",
                   }}
                 >
                   <span
                     className="inline-block w-1.5 h-1.5 rounded-full"
-                    style={{ backgroundColor: p.active ? "var(--accent)" : "var(--border)" }}
+                    style={{ backgroundColor: p.active ? "var(--accent)" : "var(--line)" }}
                   />
                   {p.active ? "Active" : "Inactive"}
                 </span>
@@ -262,7 +262,7 @@ export function TeamClient({ initialProfiles }: { initialProfiles: Profile[] }) 
                 <button
                   onClick={() => toggleActive(p.id)}
                   className="transition-colors p-0.5"
-                  style={{ color: p.active ? "var(--accent)" : "var(--text3)" }}
+                  style={{ color: p.active ? "var(--accent)" : "var(--muted2)" }}
                 >
                   {p.active ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
                 </button>

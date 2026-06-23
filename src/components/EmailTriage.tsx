@@ -8,21 +8,21 @@ import type { Urgency, EmailCard, SenderType } from "@/lib/types";
 
 const urgencyConfig: Record<Urgency, { color: string; bg: string; border: string; label: string }> = {
   high: {
-    color: "var(--high)",
+    color: "var(--red)",
     bg: "rgba(255,107,107,0.12)",
-    border: "border-l-[var(--high)]",
+    border: "border-l-[var(--red)]",
     label: "High",
   },
   medium: {
-    color: "var(--med)",
+    color: "var(--amber)",
     bg: "rgba(255,160,64,0.12)",
-    border: "border-l-[var(--med)]",
+    border: "border-l-[var(--amber)]",
     label: "Medium",
   },
   low: {
-    color: "var(--low)",
+    color: "var(--blue)",
     bg: "rgba(100,200,240,0.12)",
-    border: "border-l-[var(--low)]",
+    border: "border-l-[var(--blue)]",
     label: "Low",
   },
 };
@@ -39,10 +39,10 @@ const senderColors: Record<string, string> = {
 const senderText: Record<string, string> = {
   Agent: "var(--accent)",
   "Title Company": "var(--purple)",
-  Lender: "var(--low)",
-  Inspector: "var(--med)",
-  Attorney: "var(--high)",
-  Client: "var(--low)",
+  Lender: "var(--blue)",
+  Inspector: "var(--amber)",
+  Attorney: "var(--red)",
+  Client: "var(--blue)",
 };
 
 // Map API email flags to EmailCard format
@@ -129,13 +129,13 @@ export default function EmailTriage() {
   return (
     <div className="flex flex-col h-full">
       {/* Topbar */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
-        <h2 className="font-serif text-lg text-[var(--text)] tracking-tight">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--line)]">
+        <h2 className="font-serif text-lg text-[var(--ink)] tracking-tight">
           Email Triage
         </h2>
         <div className="flex items-center gap-3">
           {/* Filter pills */}
-          <div className="flex items-center gap-1.5 bg-[var(--surface)] rounded-lg p-1">
+          <div className="flex items-center gap-1.5 bg-[var(--card)] rounded-lg p-1">
             {(["all", "high", "medium", "low"] as const).map((f) => (
               <button
                 key={f}
@@ -143,8 +143,8 @@ export default function EmailTriage() {
                 className={cn(
                   "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
                   filter === f
-                    ? "bg-[var(--surface2)] text-[var(--text)]"
-                    : "text-[var(--text2)] hover:text-[var(--text)]"
+                    ? "bg-[var(--card2)] text-[var(--ink)]"
+                    : "text-[var(--muted)] hover:text-[var(--ink)]"
                 )}
               >
                 {f === "all" ? "All" : f.charAt(0).toUpperCase() + f.slice(1)}
@@ -170,14 +170,14 @@ export default function EmailTriage() {
 
       {/* Scanning state */}
       {scanning && (
-        <div className="mx-6 mt-4 p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)]">
+        <div className="mx-6 mt-4 p-4 rounded-xl bg-[var(--card)] border border-[var(--line)]">
           <div className="flex items-center gap-3 mb-3">
             <Clock size={16} className="text-[var(--accent)] animate-pulse" />
             <span className="text-sm font-medium text-[var(--accent)]">
               Scanning inbox...
             </span>
           </div>
-          <div className="h-1.5 bg-[var(--surface2)] rounded-full overflow-hidden">
+          <div className="h-1.5 bg-[var(--card2)] rounded-full overflow-hidden">
             <div className="h-full bg-[var(--accent)] rounded-full animate-pulse w-2/3" />
           </div>
         </div>
@@ -185,7 +185,7 @@ export default function EmailTriage() {
 
       {/* Loading state */}
       {loading && (
-        <div className="flex flex-col items-center justify-center py-20 text-[var(--text3)]">
+        <div className="flex flex-col items-center justify-center py-20 text-[var(--muted2)]">
           <Loader2 size={24} className="mb-3 animate-spin opacity-50" />
           <span className="text-sm">Loading flagged emails...</span>
         </div>
@@ -203,7 +203,7 @@ export default function EmailTriage() {
           />
         ))}
         {filtered.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 text-[var(--text3)]">
+          <div className="flex flex-col items-center justify-center py-20 text-[var(--muted2)]">
             <Mail size={32} className="mb-3 opacity-50" />
             <span className="text-sm">No emails in this category</span>
           </div>
@@ -228,7 +228,7 @@ function EmailCardItem({
   return (
     <div
       className={cn(
-        "rounded-xl bg-[var(--surface)] border border-[var(--border)] border-l-[3px] overflow-hidden transition-all hover:border-[var(--text3)]",
+        "rounded-xl bg-[var(--card)] border border-[var(--line)] border-l-[3px] overflow-hidden transition-all hover:border-[var(--muted2)]",
         cfg.border
       )}
       style={{ borderLeftColor: cfg.color }}
@@ -237,7 +237,7 @@ function EmailCardItem({
         {/* Top row */}
         <div className="flex items-start justify-between mb-2">
           <h3
-            className="font-serif text-[15px] text-[var(--text)] leading-snug"
+            className="font-serif text-[15px] text-[var(--ink)] leading-snug"
             style={{ fontFamily: "Instrument Serif, serif", fontSize: "15px" }}
           >
             {email.propertyName}
@@ -268,21 +268,21 @@ function EmailCardItem({
 
         {/* From + date */}
         <div
-          className="text-xs text-[var(--text2)] mb-2.5"
+          className="text-xs text-[var(--muted)] mb-2.5"
           style={{ fontFamily: "DM Mono, monospace" }}
         >
           From: {email.senderName} · {email.date}
         </div>
 
         {/* Summary */}
-        <p className="text-sm text-[var(--text2)] leading-relaxed mb-3.5">
+        <p className="text-sm text-[var(--muted)] leading-relaxed mb-3.5">
           {email.summary}
         </p>
 
         {/* Task row */}
-        <div className="flex items-center gap-3 pt-3 border-t border-[var(--border)]">
+        <div className="flex items-center gap-3 pt-3 border-t border-[var(--line)]">
           <ArrowRight size={14} className="text-[var(--accent)] shrink-0" />
-          <span className="text-xs text-[var(--text)] flex-1 leading-relaxed">
+          <span className="text-xs text-[var(--ink)] flex-1 leading-relaxed">
             {email.proposedTask}
           </span>
           <div className="flex items-center gap-1.5 shrink-0">
@@ -295,7 +295,7 @@ function EmailCardItem({
             </button>
             <button
               onClick={onDismiss}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium text-[var(--text3)] hover:text-[var(--text2)] hover:bg-[var(--surface2)] transition-all"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium text-[var(--muted2)] hover:text-[var(--muted)] hover:bg-[var(--card2)] transition-all"
             >
               <X size={12} />
               Dismiss

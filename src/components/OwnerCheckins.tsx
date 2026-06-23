@@ -279,7 +279,7 @@ export default function OwnerCheckins() {
         className="px-6"
         style={{
           height: "3px",
-          backgroundColor: "var(--border)",
+          backgroundColor: "var(--line)",
         }}
       >
         <div
@@ -294,32 +294,32 @@ export default function OwnerCheckins() {
       </div>
 
       {/* Calendar */}
-      <div className="px-6 pt-4 pb-3 border-b border-[var(--border)]">
+      <div className="px-6 pt-4 pb-3 border-b border-[var(--line)]">
         {/* Month nav */}
         <div className="flex items-center justify-between mb-3">
           <button
             onClick={prevMonth}
-            className="p-1 rounded text-[var(--text3)] hover:text-[var(--text)] hover:bg-[var(--surface)] transition-all"
+            className="p-1 rounded text-[var(--muted2)] hover:text-[var(--ink)] hover:bg-[var(--card)] transition-all"
           >
             <ChevronLeft size={18} />
           </button>
           <div className="text-center">
             <h3
-              className="font-serif text-lg text-[var(--text)] tracking-tight leading-tight"
+              className="font-serif text-lg text-[var(--ink)] tracking-tight leading-tight"
               style={{ fontFamily: "Instrument Serif, serif", fontSize: "18px" }}
             >
               {MONTHS[month]} {year}
             </h3>
             <p
               className="text-[10px]"
-              style={{ fontFamily: "DM Mono, monospace", color: "var(--text3)" }}
+              style={{ fontFamily: "DM Mono, monospace", color: "var(--muted2)" }}
             >
               {totalScheduled} scheduled · click a day to filter
             </p>
           </div>
           <button
             onClick={nextMonth}
-            className="p-1 rounded text-[var(--text3)] hover:text-[var(--text)] hover:bg-[var(--surface)] transition-all"
+            className="p-1 rounded text-[var(--muted2)] hover:text-[var(--ink)] hover:bg-[var(--card)] transition-all"
           >
             <ChevronRightIcon size={18} />
           </button>
@@ -330,7 +330,7 @@ export default function OwnerCheckins() {
           {DAYS.map((d) => (
             <div
               key={d}
-              className="text-center py-1 text-[var(--text3)] uppercase tracking-wider"
+              className="text-center py-1 text-[var(--muted2)] uppercase tracking-wider"
               style={{ fontSize: "9px", fontFamily: "DM Mono, monospace" }}
             >
               {d}
@@ -346,7 +346,7 @@ export default function OwnerCheckins() {
                 <div
                   key={`empty-${i}`}
                   className="rounded-md"
-                  style={{ minHeight: "70px", backgroundColor: "var(--surface)" }}
+                  style={{ minHeight: "70px", backgroundColor: "var(--card)" }}
                 />
               );
             }
@@ -365,26 +365,26 @@ export default function OwnerCheckins() {
                     ? ""
                     : today
                     ? ""
-                    : "hover:bg-[var(--surface)]"
+                    : "hover:bg-[var(--card)]"
                 )}
                 style={{
                   minHeight: "70px",
                   backgroundColor: selected
                     ? "rgba(240,200,100,0.15)"
                     : today
-                    ? "var(--surface2)"
-                    : "var(--surface)",
+                    ? "var(--card2)"
+                    : "var(--card)",
                   border: selected
                     ? "1px solid rgba(240,200,100,0.4)"
                     : today
                     ? "1px solid rgba(240,200,100,0.5)"
-                    : "1px solid var(--border)",
+                    : "1px solid var(--line)",
                 }}
               >
                 <span
                   className={cn(
                     "text-xs font-medium",
-                    today ? "text-[#f0c864]" : "text-[var(--text2)]"
+                    today ? "text-[#f0c864]" : "text-[var(--muted)]"
                   )}
                   style={today ? { fontFamily: "DM Sans, sans-serif" } : {}}
                 >
@@ -400,7 +400,7 @@ export default function OwnerCheckins() {
                         fontSize: "9px",
                         fontFamily: "DM Mono, monospace",
                         backgroundColor: "rgba(100,200,240,0.18)",
-                        color: "var(--low)",
+                        color: "var(--blue)",
                         lineHeight: "1.4",
                       }}
                     >
@@ -413,7 +413,7 @@ export default function OwnerCheckins() {
                       style={{
                         fontSize: "9px",
                         fontFamily: "DM Mono, monospace",
-                        color: "var(--text3)",
+                        color: "var(--muted2)",
                       }}
                     >
                       +{events.length - 3} more
@@ -428,17 +428,17 @@ export default function OwnerCheckins() {
 
       {/* Date filter bar */}
       <div
-        className="px-6 py-2 flex items-center gap-3 border-b border-[var(--border)]"
-        style={{ backgroundColor: "var(--surface2)" }}
+        className="px-6 py-2 flex items-center gap-3 border-b border-[var(--line)]"
+        style={{ backgroundColor: "var(--card2)" }}
       >
         {selectedDay ? (
           <>
             <span
               className="text-xs"
-              style={{ color: "var(--text2)", fontFamily: "DM Sans, sans-serif" }}
+              style={{ color: "var(--muted)", fontFamily: "DM Sans, sans-serif" }}
             >
               Showing{" "}
-              <strong style={{ color: "var(--text)" }}>
+              <strong style={{ color: "var(--ink)" }}>
                 {formattedSelectedDate}
               </strong>{" "}
               · {filteredOwners.length} booking{filteredOwners.length !== 1 ? "s" : ""}
@@ -446,7 +446,7 @@ export default function OwnerCheckins() {
             <button
               onClick={clearFilter}
               className="flex items-center gap-1 text-xs transition-colors hover:opacity-80"
-              style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+              style={{ color: "var(--muted2)", fontFamily: "DM Mono, monospace" }}
             >
               ← Clear filter
             </button>
@@ -454,7 +454,7 @@ export default function OwnerCheckins() {
         ) : (
           <span
             className="text-xs"
-            style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+            style={{ color: "var(--muted2)", fontFamily: "DM Mono, monospace" }}
           >
             Showing all check-ins
           </span>
@@ -465,15 +465,15 @@ export default function OwnerCheckins() {
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
         {selectedDay && filteredOwners.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16">
-            <Calendar size={28} className="mb-3 opacity-50" style={{ color: "var(--text3)" }} />
-            <span className="text-sm" style={{ color: "var(--text3)" }}>No check-ins on this day</span>
+            <Calendar size={28} className="mb-3 opacity-50" style={{ color: "var(--muted2)" }} />
+            <span className="text-sm" style={{ color: "var(--muted2)" }}>No check-ins on this day</span>
           </div>
         )}
 
         {!selectedDay && filteredOwners.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20">
-            <Calendar size={32} className="mb-3 opacity-50" style={{ color: "var(--text3)" }} />
-            <span className="text-sm" style={{ color: "var(--text3)" }}>
+            <Calendar size={32} className="mb-3 opacity-50" style={{ color: "var(--muted2)" }} />
+            <span className="text-sm" style={{ color: "var(--muted2)" }}>
               Select a day to view check-ins
             </span>
           </div>
@@ -505,14 +505,14 @@ export default function OwnerCheckins() {
                 </span>
                 <span
                   className="text-[11px]"
-                  style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+                  style={{ color: "var(--muted2)", fontFamily: "DM Mono, monospace" }}
                 >
                   {owners.length}
                 </span>
                 {/* Line after count */}
                 <div
                   className="flex-1"
-                  style={{ height: "1px", backgroundColor: "var(--border)" }}
+                  style={{ height: "1px", backgroundColor: "var(--line)" }}
                 />
               </div>
 
@@ -585,22 +585,22 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
     <div
       className="rounded-xl overflow-hidden"
       style={{
-        backgroundColor: "var(--surface)",
-        border: "1px solid var(--border)",
+        backgroundColor: "var(--card)",
+        border: "1px solid var(--line)",
         borderLeft: `3px solid ${scfg.borderColor}`,
       }}
     >
       {/* Card head */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full p-4 hover:bg-[var(--surface2)]/50 transition-all text-left"
+        className="w-full p-4 hover:bg-[var(--card2)]/50 transition-all text-left"
       >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1 flex-wrap">
               <h3
                 className="font-serif text-[15px]"
-                style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)" }}
+                style={{ fontFamily: "Instrument Serif, serif", color: "var(--ink)" }}
               >
                 {owner.name}
               </h3>
@@ -612,7 +612,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                       ? "rgba(200,240,100,0.12)"
                       : "rgba(100,200,240,0.12)",
                   color:
-                    owner.dealType === "Sale" ? "var(--accent)" : "var(--low)",
+                    owner.dealType === "Sale" ? "var(--accent)" : "var(--blue)",
                   fontFamily: "DM Mono, monospace",
                 }}
               >
@@ -621,8 +621,8 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
               <span
                 className="px-2 py-0.5 rounded text-[10px] font-medium"
                 style={{
-                  backgroundColor: "var(--surface2)",
-                  color: "var(--text2)",
+                  backgroundColor: "var(--card2)",
+                  color: "var(--muted)",
                   fontFamily: "DM Mono, monospace",
                 }}
               >
@@ -630,7 +630,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
               </span>
             </div>
 
-            <div className="flex items-center gap-3 text-xs flex-wrap" style={{ color: "var(--text2)" }}>
+            <div className="flex items-center gap-3 text-xs flex-wrap" style={{ color: "var(--muted)" }}>
               <span className="flex items-center gap-1">
                 <MapPin size={10} />
                 {owner.address.split(",")[0]}
@@ -655,7 +655,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                       ? "rgba(255,107,107,0.15)"
                       : "rgba(255,160,64,0.12)",
                   color:
-                    owner.reminderDays < 2 ? "var(--high)" : "var(--med)",
+                    owner.reminderDays < 2 ? "var(--red)" : "var(--amber)",
                   fontFamily: "DM Mono, monospace",
                 }}
               >
@@ -670,7 +670,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                 className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full text-[11px] font-medium"
                 style={{
                   backgroundColor: "rgba(255,160,64,0.12)",
-                  color: "var(--med)",
+                  color: "var(--amber)",
                   fontFamily: "DM Mono, monospace",
                 }}
               >
@@ -692,9 +692,9 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
               {scfg.label}
             </span>
             {expanded ? (
-              <ChevronDown size={16} style={{ color: "var(--text3)" }} />
+              <ChevronDown size={16} style={{ color: "var(--muted2)" }} />
             ) : (
-              <ChevronRight size={16} style={{ color: "var(--text3)" }} />
+              <ChevronRight size={16} style={{ color: "var(--muted2)" }} />
             )}
           </div>
         </div>
@@ -704,12 +704,12 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
       {expanded && (
         <div
           className="px-4 pb-4 space-y-5 pt-4"
-          style={{ borderTop: "1px solid var(--border)" }}
+          style={{ borderTop: "1px solid var(--line)" }}
         >
           {/* Awaiting state */}
           {status === "awaiting" && (
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm" style={{ color: "var(--text2)" }}>
+              <div className="flex items-center gap-2 text-sm" style={{ color: "var(--muted)" }}>
                 <Link2 size={14} style={{ color: "#f0c864" }} />
                 <span>Owner hasn&apos;t booked a check-in call yet.</span>
               </div>
@@ -748,32 +748,32 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
               <div className="grid grid-cols-2 gap-3">
                 <div
                   className="p-3 rounded-lg"
-                  style={{ backgroundColor: "var(--surface2)" }}
+                  style={{ backgroundColor: "var(--card2)" }}
                 >
                   <div
                     className="text-[10px] uppercase tracking-wider mb-1 font-medium"
-                    style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+                    style={{ color: "var(--muted2)", fontFamily: "DM Mono, monospace" }}
                   >
                     Call Date/Time
                   </div>
                   <div
                     className="text-sm"
-                    style={{ color: "var(--text)", fontFamily: "DM Mono, monospace" }}
+                    style={{ color: "var(--ink)", fontFamily: "DM Mono, monospace" }}
                   >
                     {owner.callDate} at {owner.callTime}
                   </div>
                 </div>
                 <div
                   className="p-3 rounded-lg"
-                  style={{ backgroundColor: "var(--surface2)" }}
+                  style={{ backgroundColor: "var(--card2)" }}
                 >
                   <div
                     className="text-[10px] uppercase tracking-wider mb-1 font-medium"
-                    style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+                    style={{ color: "var(--muted2)", fontFamily: "DM Mono, monospace" }}
                   >
                     Stage at Call
                   </div>
-                  <div className="text-sm" style={{ color: "var(--text)" }}>
+                  <div className="text-sm" style={{ color: "var(--ink)" }}>
                     {owner.stageAtCall}
                   </div>
                 </div>
@@ -786,7 +786,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-xs hover:underline"
-                  style={{ color: "var(--low)" }}
+                  style={{ color: "var(--blue)" }}
                 >
                   <Link2 size={12} />
                   Open Calendly
@@ -798,7 +798,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                 <div>
                   <div
                     className="text-xs font-medium uppercase tracking-wider mb-2"
-                    style={{ color: "var(--text2)", fontFamily: "DM Mono, monospace" }}
+                    style={{ color: "var(--muted)", fontFamily: "DM Mono, monospace" }}
                   >
                     🤖 Call Prep — Talking Points
                   </div>
@@ -808,9 +808,9 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                         key={tp.id}
                         className="p-2.5 rounded-lg text-xs leading-relaxed"
                         style={{
-                          backgroundColor: "var(--surface2)",
-                          border: "1px solid var(--border)",
-                          color: "var(--text)",
+                          backgroundColor: "var(--card2)",
+                          border: "1px solid var(--line)",
+                          color: "var(--ink)",
                         }}
                       >
                         {tp.text}
@@ -825,7 +825,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                 <div>
                   <div
                     className="text-xs font-medium uppercase tracking-wider mb-2"
-                    style={{ color: "var(--text2)", fontFamily: "DM Mono, monospace" }}
+                    style={{ color: "var(--muted)", fontFamily: "DM Mono, monospace" }}
                   >
                     📋 Agenda ({completedAgenda}/{agendaItems.length})
                   </div>
@@ -834,22 +834,22 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                       <button
                         key={item.id}
                         onClick={() => toggleAgenda(item.id)}
-                        className="flex items-center gap-2 w-full text-left text-xs rounded-md p-1.5 transition-all hover:bg-[var(--surface2)]"
-                        style={{ color: "var(--text)" }}
+                        className="flex items-center gap-2 w-full text-left text-xs rounded-md p-1.5 transition-all hover:bg-[var(--card2)]"
+                        style={{ color: "var(--ink)" }}
                       >
                         {item.done ? (
                           <Check size={14} className="shrink-0" style={{ color: "#64f0c8" }} />
                         ) : (
                           <div
                             className="w-3.5 h-3.5 rounded shrink-0"
-                            style={{ border: "1px solid var(--border)" }}
+                            style={{ border: "1px solid var(--line)" }}
                           />
                         )}
                         <span
                           className={cn(
                             item.done && "line-through"
                           )}
-                          style={item.done ? { color: "var(--text3)" } : {}}
+                          style={item.done ? { color: "var(--muted2)" } : {}}
                         >
                           {item.text}
                         </span>
@@ -868,7 +868,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
               <div>
                 <div
                   className="text-xs font-medium uppercase tracking-wider mb-2"
-                  style={{ color: "var(--text2)", fontFamily: "DM Mono, monospace" }}
+                  style={{ color: "var(--muted)", fontFamily: "DM Mono, monospace" }}
                 >
                   Sentiment
                 </div>
@@ -891,16 +891,16 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                       style={{
                         backgroundColor:
                           sentiment === key
-                            ? "var(--surface2)"
+                            ? "var(--card2)"
                             : "transparent",
                         border:
                           sentiment === key
-                            ? "1px solid var(--border)"
+                            ? "1px solid var(--line)"
                             : "1px solid transparent",
                         color:
                           sentiment === key
-                            ? "var(--text)"
-                            : "var(--text3)",
+                            ? "var(--ink)"
+                            : "var(--muted2)",
                       }}
                     >
                       <span className="text-base">{emoji}</span>
@@ -915,16 +915,16 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                 <div>
                   <div
                     className="text-xs font-medium uppercase tracking-wider mb-2"
-                    style={{ color: "var(--text2)", fontFamily: "DM Mono, monospace" }}
+                    style={{ color: "var(--muted)", fontFamily: "DM Mono, monospace" }}
                   >
                     🤖 AI Summary
                   </div>
                   <div
                     className="p-3 rounded-lg text-sm leading-relaxed"
                     style={{
-                      backgroundColor: "var(--surface2)",
-                      border: "1px solid var(--border)",
-                      color: "var(--text)",
+                      backgroundColor: "var(--card2)",
+                      border: "1px solid var(--line)",
+                      color: "var(--ink)",
                     }}
                   >
                     {mergedSummary || owner.aiSummary}
@@ -936,7 +936,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
               <div>
                 <div
                   className="text-xs font-medium uppercase tracking-wider mb-2"
-                  style={{ color: "var(--text2)", fontFamily: "DM Mono, monospace" }}
+                  style={{ color: "var(--muted)", fontFamily: "DM Mono, monospace" }}
                 >
                   📝 Raw Notes
                 </div>
@@ -946,9 +946,9 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Enter call notes..."
                   style={{
-                    backgroundColor: "var(--surface2)",
-                    border: "1px solid var(--border)",
-                    color: "var(--text)",
+                    backgroundColor: "var(--card2)",
+                    border: "1px solid var(--line)",
+                    color: "var(--ink)",
                     fontFamily: "DM Sans, sans-serif",
                   }}
                 />
@@ -968,7 +968,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
               </button>
 
               {/* Outcome buttons in completed body */}
-              <div className="flex items-center gap-2 pt-2" style={{ borderTop: "1px solid var(--border)" }}>
+              <div className="flex items-center gap-2 pt-2" style={{ borderTop: "1px solid var(--line)" }}>
                 <button
                   onClick={() => setStatus("completed")}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
@@ -995,7 +995,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                       status === "noshow"
                         ? "rgba(255,107,107,0.15)"
                         : "rgba(255,107,107,0.06)",
-                    color: "var(--high)",
+                    color: "var(--red)",
                     border:
                       status === "noshow"
                         ? "1px solid rgba(255,107,107,0.3)"
@@ -1009,8 +1009,8 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                   onClick={() => setStatus("awaiting")}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
                   style={{
-                    backgroundColor: "var(--surface2)",
-                    color: "var(--text2)",
+                    backgroundColor: "var(--card2)",
+                    color: "var(--muted)",
                   }}
                 >
                   <RotateCcw size={12} />
@@ -1023,7 +1023,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                 <div>
                   <div
                     className="text-xs font-medium uppercase tracking-wider mb-2"
-                    style={{ color: "var(--text2)", fontFamily: "DM Mono, monospace" }}
+                    style={{ color: "var(--muted)", fontFamily: "DM Mono, monospace" }}
                   >
                     ✅ Follow-up tasks → assign & send to Daily Tasks
                   </div>
@@ -1032,7 +1032,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                       <div
                         key={item.id}
                         className="flex items-center gap-2 text-xs"
-                        style={{ color: "var(--text)" }}
+                        style={{ color: "var(--ink)" }}
                       >
                         <button onClick={() => toggleAction(item.id)} className="shrink-0">
                           {item.done ? (
@@ -1040,7 +1040,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                           ) : (
                             <div
                               className="w-3.5 h-3.5 rounded"
-                              style={{ border: "1px solid var(--border)" }}
+                              style={{ border: "1px solid var(--line)" }}
                             />
                           )}
                         </button>
@@ -1049,7 +1049,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                             "flex-1",
                             item.done && "line-through"
                           )}
-                          style={item.done ? { color: "var(--text3)" } : {}}
+                          style={item.done ? { color: "var(--muted2)" } : {}}
                         >
                           {item.text}
                         </span>
@@ -1071,9 +1071,9 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                   placeholder="Add follow-up task..."
                   className="flex-1 px-3 py-1.5 rounded-lg text-xs focus:outline-none transition-colors"
                   style={{
-                    backgroundColor: "var(--surface2)",
-                    border: "1px solid var(--border)",
-                    color: "var(--text)",
+                    backgroundColor: "var(--card2)",
+                    border: "1px solid var(--line)",
+                    color: "var(--ink)",
                     fontFamily: "DM Sans, sans-serif",
                   }}
                 />
@@ -1084,9 +1084,9 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                   style={{
                     backgroundColor: newTask.trim()
                       ? "rgba(100,200,240,0.12)"
-                      : "var(--surface2)",
-                    color: newTask.trim() ? "var(--low)" : "var(--text3)",
-                    border: "1px solid var(--border)",
+                      : "var(--card2)",
+                    color: newTask.trim() ? "var(--blue)" : "var(--muted2)",
+                    border: "1px solid var(--line)",
                     opacity: newTask.trim() ? 1 : 0.5,
                   }}
                 >
@@ -1101,7 +1101,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                   <button
                     onClick={() => setShowHistory(!showHistory)}
                     className="flex items-center gap-1.5 text-xs font-medium transition-colors"
-                    style={{ color: "var(--text2)" }}
+                    style={{ color: "var(--muted)" }}
                   >
                     {showHistory ? (
                       <ChevronDown size={14} />
@@ -1113,26 +1113,26 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                   {showHistory && (
                     <div
                       className="mt-2 space-y-2 pl-5"
-                      style={{ borderLeft: "2px solid var(--border)" }}
+                      style={{ borderLeft: "2px solid var(--line)" }}
                     >
                       {owner.conversationHistory.map((cycle, i) => (
                         <div key={i} className="relative">
                           <div
                             className="text-[10px] mb-1"
-                            style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}
+                            style={{ color: "var(--muted2)", fontFamily: "DM Mono, monospace" }}
                           >
                             {cycle.date}
                           </div>
                           <div
                             className="text-xs leading-relaxed"
-                            style={{ color: "var(--text2)" }}
+                            style={{ color: "var(--muted)" }}
                           >
                             {cycle.summary}
                           </div>
                           {cycle.notes && (
                             <div
                               className="text-xs mt-1 italic"
-                              style={{ color: "var(--text3)" }}
+                              style={{ color: "var(--muted2)" }}
                             >
                               &ldquo;{cycle.notes}&rdquo;
                             </div>
@@ -1150,7 +1150,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
           {(status === "awaiting" || status === "scheduled") && (
             <div
               className="flex items-center gap-2 pt-2"
-              style={{ borderTop: "1px solid var(--border)" }}
+              style={{ borderTop: "1px solid var(--line)" }}
             >
               {status === "awaiting" && (
                 <button
@@ -1158,7 +1158,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
                   style={{
                     backgroundColor: "rgba(100,200,240,0.12)",
-                    color: "var(--low)",
+                    color: "var(--blue)",
                   }}
                 >
                   <Calendar size={12} />
@@ -1181,7 +1181,7 @@ function OwnerCheckinCard({ owner }: { owner: OwnerCard }) {
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
                 style={{
                   backgroundColor: "rgba(255,107,107,0.12)",
-                  color: "var(--high)",
+                  color: "var(--red)",
                 }}
               >
                 <X size={12} />

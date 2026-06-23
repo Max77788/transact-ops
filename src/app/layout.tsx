@@ -29,8 +29,8 @@ export default function RootLayout({
       <body
         className="h-full"
         style={{
-          backgroundColor: "var(--bg)",
-          color: "var(--text)",
+          backgroundColor: "var(--paper)",
+          color: "var(--ink)",
           fontFamily: "DM Sans, sans-serif",
         }}
       >

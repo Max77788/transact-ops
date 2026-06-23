@@ -54,22 +54,22 @@ function AddTaskModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.6)" }} onClick={onClose}>
-      <div className="rounded-xl p-6 w-full max-w-md" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }} onClick={(e) => e.stopPropagation()}>
+      <div className="rounded-xl p-6 w-full max-w-md" style={{ backgroundColor: "var(--card)", border: "1px solid var(--line)" }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold" style={{ color: "var(--text)", fontFamily: "Instrument Serif, serif" }}>Add Task</h3>
-          <button onClick={onClose} style={{ color: "var(--text3)" }}><X size={18} /></button>
+          <h3 className="text-sm font-semibold" style={{ color: "var(--ink)", fontFamily: "Instrument Serif, serif" }}>Add Task</h3>
+          <button onClick={onClose} style={{ color: "var(--muted2)" }}><X size={18} /></button>
         </div>
         <div className="space-y-3">
-          <input className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} placeholder="Task title *" value={title} onChange={(e) => setTitle(e.target.value)} />
-          <input className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} placeholder="Assignee initials (e.g. JT)" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
-          <select className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} value={recurrence} onChange={(e) => setRecurrence(e.target.value)}>
+          <input className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} placeholder="Task title *" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <input className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} placeholder="Assignee initials (e.g. JT)" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
+          <select className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} value={recurrence} onChange={(e) => setRecurrence(e.target.value)}>
             <option value="once">Once</option>
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
           </select>
         </div>
-        {error && <p className="text-xs mt-3" style={{ color: "var(--high)" }}>{error}</p>}
-        <button className="w-full mt-4 rounded-lg py-2.5 text-sm font-semibold transition-opacity hover:opacity-90" style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }} onClick={submit} disabled={submitting}>
+        {error && <p className="text-xs mt-3" style={{ color: "var(--red)" }}>{error}</p>}
+        <button className="w-full mt-4 rounded-lg py-2.5 text-sm font-semibold transition-opacity hover:opacity-90" style={{ backgroundColor: "var(--accent)", color: "var(--paper)" }} onClick={submit} disabled={submitting}>
           {submitting ? "Creating..." : "Create Task"}
         </button>
       </div>
@@ -81,16 +81,16 @@ function TaskRow({ task, onToggle, onDelete }: { task: TaskItem; onToggle: () =>
   return (
     <div className="group flex items-center gap-2.5 py-2 px-2 rounded-md transition-colors hover:brightness-110">
       <button onClick={onToggle} className="shrink-0">
-        {task.done ? <CheckCircle2 size={16} style={{ color: "var(--accent)" }} /> : <Circle size={16} style={{ color: "var(--text3)" }} />}
+        {task.done ? <CheckCircle2 size={16} style={{ color: "var(--accent)" }} /> : <Circle size={16} style={{ color: "var(--muted2)" }} />}
       </button>
-      <span className={cn("text-sm flex-1 truncate")} style={{ color: task.done ? "var(--text3)" : "var(--text)", textDecoration: task.done ? "line-through" : "none" }}>
+      <span className={cn("text-sm flex-1 truncate")} style={{ color: task.done ? "var(--muted2)" : "var(--ink)", textDecoration: task.done ? "line-through" : "none" }}>
         {task.text}
       </span>
       <span className="shrink-0 rounded-full" style={{ width: 7, height: 7, backgroundColor: priorityColors[task.priority] }} />
-      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0" style={{ backgroundColor: "var(--surface3)", color: "var(--text2)", fontFamily: "DM Mono, monospace" }}>
+      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0" style={{ backgroundColor: "var(--card3)", color: "var(--muted)", fontFamily: "DM Mono, monospace" }}>
         {task.assignee}
       </span>
-      <span className="text-[10px] font-medium shrink-0 hidden sm:inline" style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}>
+      <span className="text-[10px] font-medium shrink-0 hidden sm:inline" style={{ color: "var(--muted2)", fontFamily: "DM Mono, monospace" }}>
         {recurrenceLabels[task.recurrence]}
       </span>
     </div>
@@ -106,7 +106,7 @@ function PropertyGroupComp({ group, onToggle, onDelete }: { group: PropertyGroup
       <button className="flex items-center gap-2 w-full py-2 px-3 rounded-md transition-colors text-left" style={{ backgroundColor: "var(--purple)" + "14" }} onClick={() => setExpanded(!expanded)}>
         {expanded ? <ChevronDown size={14} style={{ color: "var(--purple)" }} /> : <ChevronRight size={14} style={{ color: "var(--purple)" }} />}
         <span className="text-sm font-medium" style={{ color: "var(--purple)" }}>{group.propertyName}</span>
-        <span className="text-[10px] font-medium ml-auto" style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}>{completed}/{group.tasks.length}</span>
+        <span className="text-[10px] font-medium ml-auto" style={{ color: "var(--muted2)", fontFamily: "DM Mono, monospace" }}>{completed}/{group.tasks.length}</span>
       </button>
       {expanded && (
         <div className="py-1">
@@ -124,7 +124,7 @@ function BrokerageGroupComp({ group, onToggle, onDelete }: { group: BrokerageGro
       <div className="flex items-center gap-2 mb-1.5 px-2">
         <span className="rounded-full shrink-0" style={{ width: 7, height: 7, backgroundColor: group.color }} />
         <span className="text-xs font-medium" style={{ color: group.color, fontFamily: "DM Mono, monospace" }}>{group.label}</span>
-        <span className="text-[10px] font-medium" style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}>{completed}/{group.tasks.length}</span>
+        <span className="text-[10px] font-medium" style={{ color: "var(--muted2)", fontFamily: "DM Mono, monospace" }}>{completed}/{group.tasks.length}</span>
       </div>
       <div className="pl-2">
         {group.tasks.map((t) => <TaskRow key={t.id} task={t} onToggle={() => onToggle(t.id)} onDelete={() => onDelete(t.id)} />)}
@@ -176,22 +176,22 @@ export function DailyTasksClient({ initialTasks }: { initialTasks: TaskItem[] })
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg" style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)" }}>Daily Tasks</h2>
-            <p className="text-xs" style={{ color: "var(--text3)" }}>
+            <h2 className="text-lg" style={{ fontFamily: "Instrument Serif, serif", color: "var(--ink)" }}>Daily Tasks</h2>
+            <p className="text-xs" style={{ color: "var(--muted2)" }}>
               {dateLabel} · {doneCount}/{tasks.length} done
             </p>
           </div>
           <button
             onClick={() => setShowAdd(true)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-opacity hover:opacity-90"
-            style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }}
+            style={{ backgroundColor: "var(--accent)", color: "var(--paper)" }}
           >
             <Plus size={14} /> Add Task
           </button>
         </div>
 
         {/* Progress bar */}
-        <div className="mb-4 h-2 rounded-full" style={{ backgroundColor: "var(--surface3)" }}>
+        <div className="mb-4 h-2 rounded-full" style={{ backgroundColor: "var(--card3)" }}>
           <div className="h-full rounded-full transition-all" style={{ width: `${progressPct}%`, backgroundColor: "var(--accent)" }} />
         </div>
 
@@ -199,14 +199,14 @@ export function DailyTasksClient({ initialTasks }: { initialTasks: TaskItem[] })
         <div className="flex gap-1 mb-4">
           <button
             className="flex-1 text-xs font-medium px-3 py-1.5 rounded-md transition-colors"
-            style={{ backgroundColor: activeTab === "properties" ? "var(--accent)" : "var(--surface3)", color: activeTab === "properties" ? "var(--bg)" : "var(--text2)" }}
+            style={{ backgroundColor: activeTab === "properties" ? "var(--accent)" : "var(--card3)", color: activeTab === "properties" ? "var(--paper)" : "var(--muted)" }}
             onClick={() => setActiveTab("properties")}
           >
             Properties ({propertyGroups.length})
           </button>
           <button
             className="flex-1 text-xs font-medium px-3 py-1.5 rounded-md transition-colors"
-            style={{ backgroundColor: activeTab === "brokerage" ? "var(--accent)" : "var(--surface3)", color: activeTab === "brokerage" ? "var(--bg)" : "var(--text2)" }}
+            style={{ backgroundColor: activeTab === "brokerage" ? "var(--accent)" : "var(--card3)", color: activeTab === "brokerage" ? "var(--paper)" : "var(--muted)" }}
             onClick={() => setActiveTab("brokerage")}
           >
             Brokerage ({brokerageGroups.reduce((s, g) => s + g.tasks.length, 0)})
@@ -216,7 +216,7 @@ export function DailyTasksClient({ initialTasks }: { initialTasks: TaskItem[] })
         {/* Content */}
         {tasks.length === 0 ? (
           <div className="py-8 text-center">
-            <p className="text-sm" style={{ color: "var(--text3)" }}>No tasks yet. Add tasks from the pipeline or email triage.</p>
+            <p className="text-sm" style={{ color: "var(--muted2)" }}>No tasks yet. Add tasks from the pipeline or email triage.</p>
           </div>
         ) : activeTab === "properties" ? (
           propertyGroups.map((g) => <PropertyGroupComp key={g.propertyName} group={g} onToggle={toggleTask} onDelete={deleteTask} />)

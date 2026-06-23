@@ -15,7 +15,7 @@ const pageMeta: Record<string, { title: string; stats: StatItem[] }> = {
       { label: "Pipeline value", value: "$9.9M" },
       { label: "Closing this month", value: "3" },
       { label: "Closed this month", value: "2" },
-      { label: "At risk", value: "2", color: "var(--high)" },
+      { label: "At risk", value: "2", color: "var(--red)" },
       { label: "Avg days vs target", value: "+4.2" },
     ],
   },

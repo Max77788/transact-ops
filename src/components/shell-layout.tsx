@@ -20,7 +20,7 @@ const pageMeta: Record<string, { title: string; stats: StatItem[] }> = {
       { label: "Pipeline value", value: "$9.9M" },
       { label: "Closing this month", value: "3" },
       { label: "Closed this month", value: "2" },
-      { label: "At risk", value: "2", color: "var(--high)" },
+      { label: "At risk", value: "2", color: "var(--red)" },
       { label: "Avg days vs target", value: "+4.2" },
     ],
   },
@@ -84,7 +84,7 @@ export function ShellLayout({ children, actionLabel, onActionClick }: ShellLayou
       <Sidebar currentPath={pathname} />
       <div
         className="flex flex-col flex-1 min-w-0"
-        style={{ marginLeft: "var(--sidebar-w)" }}
+        style={{ marginLeft: "var(--sidebar-width)" }}
       >
         <Topbar title={meta.title} stats={meta.stats} actionLabel={actionLabel} onActionClick={onActionClick} />
         <main className="flex-1 overflow-auto">{children}</main>

@@ -21,8 +21,8 @@ export function Topbar({ title, stats = [], actionLabel, onActionClick, onMenuCl
     <header
       className="sticky top-0 z-20 flex flex-col justify-center shrink-0"
       style={{
-        backgroundColor: "var(--bg)",
-        borderBottom: "1px solid var(--border)",
+        backgroundColor: "var(--paper)",
+        borderBottom: "1px solid var(--line)",
         padding: "12px 16px",
       }}
     >
@@ -33,13 +33,13 @@ export function Topbar({ title, stats = [], actionLabel, onActionClick, onMenuCl
           <button
             onClick={onMenuClick}
             className="lg:hidden p-1.5 -ml-1 rounded-md shrink-0"
-            style={{ color: "var(--text2)" }}
+            style={{ color: "var(--muted)" }}
           >
             <Menu size={18} />
           </button>
           <h2
             className="text-xl sm:text-2xl tracking-tight truncate"
-            style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)", letterSpacing: "-0.02em" }}
+            style={{ fontFamily: "Instrument Serif, serif", color: "var(--ink)", letterSpacing: "-0.02em" }}
           >
             {title}
           </h2>
@@ -50,7 +50,7 @@ export function Topbar({ title, stats = [], actionLabel, onActionClick, onMenuCl
               className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
               style={{
                 backgroundColor: "var(--accent)",
-                color: "var(--bg)",
+                color: "#ffffff",
                 fontFamily: "DM Sans, sans-serif",
               }}
               onClick={onActionClick}
@@ -61,13 +61,13 @@ export function Topbar({ title, stats = [], actionLabel, onActionClick, onMenuCl
           )}
           <button
             className="p-1.5 rounded-md transition-colors hidden sm:block"
-            style={{ color: "var(--text2)" }}
+            style={{ color: "var(--muted)" }}
           >
             <Search size={16} />
           </button>
           <button
             className="p-1.5 rounded-md transition-colors relative"
-            style={{ color: "var(--text2)" }}
+            style={{ color: "var(--muted)" }}
           >
             <Bell size={16} />
             <span
@@ -75,7 +75,7 @@ export function Topbar({ title, stats = [], actionLabel, onActionClick, onMenuCl
               style={{
                 width: 6,
                 height: 6,
-                backgroundColor: "var(--high)",
+                backgroundColor: "var(--red)",
               }}
             />
           </button>
@@ -84,7 +84,7 @@ export function Topbar({ title, stats = [], actionLabel, onActionClick, onMenuCl
             style={{
               width: 28,
               height: 28,
-              backgroundColor: "var(--surface3)",
+              backgroundColor: "var(--card3)",
               color: "var(--accent)",
               fontFamily: "DM Mono, monospace",
             }}
@@ -103,13 +103,13 @@ export function Topbar({ title, stats = [], actionLabel, onActionClick, onMenuCl
           {stats.map((stat, i) => (
             <div key={stat.label} className="flex items-center gap-3 sm:gap-4 shrink-0">
               {i > 0 && (
-                <div style={{ width: 1, height: 14, backgroundColor: "var(--border)" }} />
+                <div style={{ width: 1, height: 14, backgroundColor: "var(--line)" }} />
               )}
               <div className="flex items-center gap-1.5">
                 <span
                   className="text-[10px] sm:text-[11px]"
                   style={{
-                    color: stat.color || "var(--text2)",
+                    color: stat.color || "var(--muted)",
                     fontFamily: "DM Mono, monospace",
                   }}
                 >
@@ -118,7 +118,7 @@ export function Topbar({ title, stats = [], actionLabel, onActionClick, onMenuCl
                 <strong
                   className="text-[10px] sm:text-[11px]"
                   style={{
-                    color: stat.color || "var(--text)",
+                    color: stat.color || "var(--ink)",
                     fontFamily: "DM Mono, monospace",
                   }}
                 >

@@ -25,7 +25,7 @@ import type {
 const sentimentConfig: Record<Sentiment, { color: string; dot: string }> = {
   positive: { color: "var(--green)", dot: "bg-[var(--green)]" },
   neutral: { color: "var(--lime)", dot: "bg-[var(--lime)]" },
-  negative: { color: "var(--high)", dot: "bg-[var(--high)]" },
+  negative: { color: "var(--red)", dot: "bg-[var(--red)]" },
 };
 
 type CommTab = "monday" | "wednesday";
@@ -36,14 +36,14 @@ export default function Communications() {
   return (
     <div className="flex flex-col h-full">
       {/* Tab bar */}
-      <div className="flex items-center border-b border-[var(--border)]">
+      <div className="flex items-center border-b border-[var(--line)]">
         <button
           onClick={() => setTab("monday")}
           className={cn(
             "flex-1 py-3 text-sm font-medium text-center transition-all border-b-2",
             tab === "monday"
               ? "border-[var(--purple)] text-[var(--purple)]"
-              : "border-transparent text-[var(--text2)] hover:text-[var(--text)]"
+              : "border-transparent text-[var(--muted)] hover:text-[var(--ink)]"
           )}
         >
           Monday Feedback
@@ -53,8 +53,8 @@ export default function Communications() {
           className={cn(
             "flex-1 py-3 text-sm font-medium text-center transition-all border-b-2",
             tab === "wednesday"
-              ? "border-[var(--low)] text-[var(--low)]"
-              : "border-transparent text-[var(--text2)] hover:text-[var(--text)]"
+              ? "border-[var(--blue)] text-[var(--blue)]"
+              : "border-transparent text-[var(--muted)] hover:text-[var(--ink)]"
           )}
         >
           Wednesday Open Houses
@@ -75,14 +75,14 @@ function MondayTab() {
   return (
     <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
       {/* Info header */}
-      <div className="p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)]">
+      <div className="p-4 rounded-xl bg-[var(--card)] border border-[var(--line)]">
         <div className="flex items-center gap-2 mb-1.5">
           <RefreshCw size={14} className="text-[var(--purple)]" />
           <span className="text-sm font-medium text-[var(--purple)]">
             Automated Feedback Drafts
           </span>
         </div>
-        <p className="text-xs text-[var(--text2)] leading-relaxed">
+        <p className="text-xs text-[var(--muted)] leading-relaxed">
           Every Monday morning, TransactOps drafts personalized showing feedback
           emails based on the week's activity. Review, edit, and send to your
           sellers below.
@@ -101,15 +101,15 @@ function MondayFeedbackCardItem({ card }: { card: MondayFeedbackCard }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="rounded-xl bg-[var(--surface)] border border-[var(--border)] overflow-hidden">
+    <div className="rounded-xl bg-[var(--card)] border border-[var(--line)] overflow-hidden">
       {/* Head */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-4 hover:bg-[var(--surface2)]/50 transition-all text-left"
+        className="w-full flex items-center justify-between p-4 hover:bg-[var(--card2)]/50 transition-all text-left"
       >
         <div className="flex items-center gap-3 min-w-0">
           <h3
-            className="font-serif text-[15px] text-[var(--text)] truncate"
+            className="font-serif text-[15px] text-[var(--ink)] truncate"
             style={{ fontFamily: "Instrument Serif, serif", fontSize: "15px" }}
           >
             {card.address}
@@ -130,7 +130,7 @@ function MondayFeedbackCardItem({ card }: { card: MondayFeedbackCard }) {
             className={cn(
               "px-2 py-0.5 rounded text-[11px] font-medium font-mono",
               card.status === "draft"
-                ? "bg-[var(--med)]/10 text-[var(--med)]"
+                ? "bg-[var(--amber)]/10 text-[var(--amber)]"
                 : "bg-[var(--green)]/10 text-[var(--green)]"
             )}
             style={{ fontFamily: "DM Mono, monospace" }}
@@ -138,25 +138,25 @@ function MondayFeedbackCardItem({ card }: { card: MondayFeedbackCard }) {
             {card.status === "draft" ? "Draft" : "Sent"}
           </span>
           {expanded ? (
-            <ChevronDown size={16} className="text-[var(--text3)]" />
+            <ChevronDown size={16} className="text-[var(--muted2)]" />
           ) : (
-            <ChevronRight size={16} className="text-[var(--text3)]" />
+            <ChevronRight size={16} className="text-[var(--muted2)]" />
           )}
         </div>
       </button>
 
       {/* Expandable body */}
       {expanded && (
-        <div className="px-4 pb-4 space-y-4 border-t border-[var(--border)] pt-4">
+        <div className="px-4 pb-4 space-y-4 border-t border-[var(--line)] pt-4">
           {/* Showings table */}
           <div>
-            <div className="text-xs font-medium text-[var(--text2)] mb-2 uppercase tracking-wider">
+            <div className="text-xs font-medium text-[var(--muted)] mb-2 uppercase tracking-wider">
               Showings
             </div>
-            <div className="rounded-lg border border-[var(--border)] overflow-hidden">
+            <div className="rounded-lg border border-[var(--line)] overflow-hidden">
               <table className="w-full text-xs">
                 <thead>
-                  <tr className="bg-[var(--surface2)] text-[var(--text2)]">
+                  <tr className="bg-[var(--card2)] text-[var(--muted)]">
                     <th className="text-left py-2 px-3 font-medium font-mono">Date</th>
                     <th className="text-left py-2 px-3 font-medium font-mono">Agent</th>
                     <th className="text-left py-2 px-3 font-medium font-mono">Feedback</th>
@@ -167,11 +167,11 @@ function MondayFeedbackCardItem({ card }: { card: MondayFeedbackCard }) {
                   {card.showings.map((s, i) => (
                     <tr
                       key={i}
-                      className="border-t border-[var(--border)] text-[var(--text)]"
+                      className="border-t border-[var(--line)] text-[var(--ink)]"
                     >
-                      <td className="py-2.5 px-3 font-mono text-[var(--text2)]">{s.date}</td>
+                      <td className="py-2.5 px-3 font-mono text-[var(--muted)]">{s.date}</td>
                       <td className="py-2.5 px-3">{s.agent}</td>
-                      <td className="py-2.5 px-3 text-[var(--text2)] leading-relaxed">
+                      <td className="py-2.5 px-3 text-[var(--muted)] leading-relaxed">
                         {s.feedback}
                       </td>
                       <td className="py-2.5 px-3 text-center">
@@ -190,13 +190,13 @@ function MondayFeedbackCardItem({ card }: { card: MondayFeedbackCard }) {
           </div>
 
           {/* Draft label */}
-          <div className="text-xs font-medium text-[var(--text2)] uppercase tracking-wider">
+          <div className="text-xs font-medium text-[var(--muted)] uppercase tracking-wider">
             Draft Email
           </div>
 
           {/* Editable draft textarea */}
           <textarea
-            className="w-full min-h-[140px] bg-[var(--surface2)] border border-[var(--border)] rounded-lg p-3 text-sm text-[var(--text)] leading-relaxed resize-y focus:outline-none focus:border-[var(--purple)] transition-colors placeholder-[var(--text3)]"
+            className="w-full min-h-[140px] bg-[var(--card2)] border border-[var(--line)] rounded-lg p-3 text-sm text-[var(--ink)] leading-relaxed resize-y focus:outline-none focus:border-[var(--purple)] transition-colors placeholder-[var(--muted2)]"
             defaultValue={card.draftText}
             style={{ fontFamily: "DM Sans, sans-serif" }}
           />
@@ -211,7 +211,7 @@ function MondayFeedbackCardItem({ card }: { card: MondayFeedbackCard }) {
               <Send size={12} />
               Send
             </button>
-            <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium text-[var(--text3)] hover:text-[var(--text2)] hover:bg-[var(--surface2)] transition-all">
+            <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium text-[var(--muted2)] hover:text-[var(--muted)] hover:bg-[var(--card2)] transition-all">
               Cancel
             </button>
           </div>
@@ -241,7 +241,7 @@ function WednesdayTab() {
   return (
     <div className="flex h-full">
       {/* Left: Open house list (2/3) */}
-      <div className="flex-[2] overflow-y-auto px-6 py-4 space-y-3 border-r border-[var(--border)]">
+      <div className="flex-[2] overflow-y-auto px-6 py-4 space-y-3 border-r border-[var(--line)]">
         {mockOpenHouses.map((card) => (
           <OpenHouseCardItem
             key={card.id}
@@ -255,22 +255,22 @@ function WednesdayTab() {
       {/* Right: Schedule panel (1/3, sticky) */}
       <div className="flex-1 p-4 space-y-5 overflow-y-auto">
         <div>
-          <h3 className="text-xs font-medium text-[var(--text2)] uppercase tracking-wider mb-3">
+          <h3 className="text-xs font-medium text-[var(--muted)] uppercase tracking-wider mb-3">
             ️ Wednesday Schedule
           </h3>
           <div className="space-y-2">
             {mockScheduleSlots.map((slot, i) => (
               <div
                 key={i}
-                className="p-3 rounded-lg bg-[var(--surface)] border border-[var(--border)]"
+                className="p-3 rounded-lg bg-[var(--card)] border border-[var(--line)]"
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <Clock size={12} className="text-[var(--low)]" />
-                  <span className="text-xs font-medium text-[var(--text)] font-mono">
+                  <Clock size={12} className="text-[var(--blue)]" />
+                  <span className="text-xs font-medium text-[var(--ink)] font-mono">
                     {slot.time}
                   </span>
                 </div>
-                <div className="text-xs text-[var(--text2)] leading-relaxed">
+                <div className="text-xs text-[var(--muted)] leading-relaxed">
                   {slot.address}
                 </div>
               </div>
@@ -279,23 +279,23 @@ function WednesdayTab() {
         </div>
 
         {/* Stats */}
-        <div className="p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)] space-y-3">
+        <div className="p-4 rounded-xl bg-[var(--card)] border border-[var(--line)] space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-[var(--text2)]">Scheduled</span>
-            <span className="text-sm font-mono font-medium text-[var(--text)]">
+            <span className="text-xs text-[var(--muted)]">Scheduled</span>
+            <span className="text-sm font-mono font-medium text-[var(--ink)]">
               {scheduledCount}
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-xs text-[var(--text2)]">Sent</span>
-            <span className="text-sm font-mono font-medium text-[var(--text)]">
+            <span className="text-xs text-[var(--muted)]">Sent</span>
+            <span className="text-sm font-mono font-medium text-[var(--ink)]">
               {sentCount}
             </span>
           </div>
         </div>
 
         {/* Send All button */}
-        <button className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-medium bg-[var(--low)]/10 text-[var(--low)] hover:bg-[var(--low)]/20 transition-all">
+        <button className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-medium bg-[var(--blue)]/10 text-[var(--blue)] hover:bg-[var(--blue)]/20 transition-all">
           <Send size={12} />
           Send All ({mockOpenHouses.length})
         </button>
@@ -316,15 +316,15 @@ function OpenHouseCardItem({
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="rounded-xl bg-[var(--surface)] border border-[var(--border)] overflow-hidden">
+    <div className="rounded-xl bg-[var(--card)] border border-[var(--line)] overflow-hidden">
       {/* Head */}
       <div className="flex items-center gap-3 p-4">
         <button
           onClick={onToggle}
-          className="shrink-0 text-[var(--text3)] hover:text-[var(--low)] transition-colors"
+          className="shrink-0 text-[var(--muted2)] hover:text-[var(--blue)] transition-colors"
         >
           {selected ? (
-            <CheckSquare size={18} className="text-[var(--low)]" />
+            <CheckSquare size={18} className="text-[var(--blue)]" />
           ) : (
             <Square size={18} />
           )}
@@ -335,57 +335,57 @@ function OpenHouseCardItem({
         >
           <div className="min-w-0">
             <h3
-              className="font-serif text-[15px] text-[var(--text)] truncate"
+              className="font-serif text-[15px] text-[var(--ink)] truncate"
               style={{ fontFamily: "Instrument Serif, serif", fontSize: "15px" }}
             >
               {card.address}
             </h3>
-            <div className="text-xs font-mono text-[var(--text3)] mt-0.5">
+            <div className="text-xs font-mono text-[var(--muted2)] mt-0.5">
               {card.reason}
             </div>
           </div>
           {expanded ? (
-            <ChevronDown size={16} className="text-[var(--text3)] shrink-0 ml-2" />
+            <ChevronDown size={16} className="text-[var(--muted2)] shrink-0 ml-2" />
           ) : (
-            <ChevronRight size={16} className="text-[var(--text3)] shrink-0 ml-2" />
+            <ChevronRight size={16} className="text-[var(--muted2)] shrink-0 ml-2" />
           )}
         </button>
       </div>
 
       {/* Expandable body */}
       {expanded && (
-        <div className="px-4 pb-4 space-y-4 border-t border-[var(--border)] pt-4">
+        <div className="px-4 pb-4 space-y-4 border-t border-[var(--line)] pt-4">
           {/* Date/Time form */}
           <div className="flex gap-3">
             <div className="flex-1">
-              <label className="block text-xs text-[var(--text2)] mb-1.5 font-medium">
+              <label className="block text-xs text-[var(--muted)] mb-1.5 font-medium">
                 Date
               </label>
               <input
                 type="date"
                 defaultValue={card.date}
-                className="w-full bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] focus:outline-none focus:border-[var(--low)] transition-colors font-mono"
+                className="w-full bg-[var(--card2)] border border-[var(--line)] rounded-lg px-3 py-2 text-sm text-[var(--ink)] focus:outline-none focus:border-[var(--blue)] transition-colors font-mono"
               />
             </div>
             <div className="flex-1">
-              <label className="block text-xs text-[var(--text2)] mb-1.5 font-medium">
+              <label className="block text-xs text-[var(--muted)] mb-1.5 font-medium">
                 Time
               </label>
               <input
                 type="time"
                 defaultValue={card.time}
-                className="w-full bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] focus:outline-none focus:border-[var(--low)] transition-colors font-mono"
+                className="w-full bg-[var(--card2)] border border-[var(--line)] rounded-lg px-3 py-2 text-sm text-[var(--ink)] focus:outline-none focus:border-[var(--blue)] transition-colors font-mono"
               />
             </div>
           </div>
 
           {/* Email preview textarea */}
           <div>
-            <label className="block text-xs text-[var(--text2)] mb-1.5 font-medium uppercase tracking-wider">
+            <label className="block text-xs text-[var(--muted)] mb-1.5 font-medium uppercase tracking-wider">
               Email Preview
             </label>
             <textarea
-              className="w-full min-h-[120px] bg-[var(--surface2)] border border-[var(--border)] rounded-lg p-3 text-sm text-[var(--text)] leading-relaxed resize-y focus:outline-none focus:border-[var(--low)] transition-colors placeholder-[var(--text3)]"
+              className="w-full min-h-[120px] bg-[var(--card2)] border border-[var(--line)] rounded-lg p-3 text-sm text-[var(--ink)] leading-relaxed resize-y focus:outline-none focus:border-[var(--blue)] transition-colors placeholder-[var(--muted2)]"
               defaultValue={card.emailPreview}
               style={{ fontFamily: "DM Sans, sans-serif" }}
             />
@@ -393,11 +393,11 @@ function OpenHouseCardItem({
 
           {/* Actions */}
           <div className="flex items-center gap-2">
-            <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium bg-[var(--low)]/10 text-[var(--low)] hover:bg-[var(--low)]/20 transition-all">
+            <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium bg-[var(--blue)]/10 text-[var(--blue)] hover:bg-[var(--blue)]/20 transition-all">
               <RefreshCw size={12} />
               Generate
             </button>
-            <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium bg-[var(--low)]/10 text-[var(--low)] hover:bg-[var(--low)]/20 transition-all">
+            <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium bg-[var(--blue)]/10 text-[var(--blue)] hover:bg-[var(--blue)]/20 transition-all">
               <Edit3 size={12} />
               Edit
             </button>

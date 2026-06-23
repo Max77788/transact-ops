@@ -60,12 +60,12 @@ export default function Home() {
     <div className="flex flex-col items-center justify-center py-20 px-6">
         <h1
           className="text-3xl mb-2"
-          style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)" }}
+          style={{ fontFamily: "Instrument Serif, serif", color: "var(--ink)" }}
         >
           Welcome to{" "}
           <span style={{ color: "var(--accent)" }}>TransactOps</span>
         </h1>
-        <p className="text-sm mb-10" style={{ color: "var(--text2)" }}>
+        <p className="text-sm mb-10" style={{ color: "var(--muted)" }}>
           Real estate transaction operations console
         </p>
 
@@ -75,7 +75,7 @@ export default function Home() {
               key={link.href}
               href={link.href}
               className="flex items-start gap-3 p-4 rounded-lg transition-colors hover:brightness-110"
-              style={{ backgroundColor: "var(--surface)" }}
+              style={{ backgroundColor: "var(--card)" }}
             >
               <div
                 className="p-2 rounded-md shrink-0"
@@ -84,10 +84,10 @@ export default function Home() {
                 {link.icon}
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-medium" style={{ color: "var(--text)" }}>
+                <p className="text-sm font-medium" style={{ color: "var(--ink)" }}>
                   {link.label}
                 </p>
-                <p className="text-xs mt-0.5" style={{ color: "var(--text3)" }}>
+                <p className="text-xs mt-0.5" style={{ color: "var(--muted2)" }}>
                   {link.description}
                 </p>
               </div>

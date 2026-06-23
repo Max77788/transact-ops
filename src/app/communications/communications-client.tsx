@@ -20,14 +20,14 @@ function AddFeedbackModal({ onClose, onCreated }: { onClose: () => void; onCreat
   };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.6)" }} onClick={onClose}>
-      <div className="rounded-xl p-6 w-full max-w-md" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }} onClick={(e) => e.stopPropagation()}>
+      <div className="rounded-xl p-6 w-full max-w-md" style={{ backgroundColor: "var(--card)", border: "1px solid var(--line)" }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold" style={{ color: "var(--text)", fontFamily: "Instrument Serif, serif" }}>Add Feedback Draft</h3>
-          <button onClick={onClose} style={{ color: "var(--text3)" }}><X size={18} /></button>
+          <h3 className="text-sm font-semibold" style={{ color: "var(--ink)", fontFamily: "Instrument Serif, serif" }}>Add Feedback Draft</h3>
+          <button onClick={onClose} style={{ color: "var(--muted2)" }}><X size={18} /></button>
         </div>
-        <textarea className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} placeholder="Feedback content *" rows={4} value={content} onChange={(e) => setContent(e.target.value)} />
-        {error && <p className="text-xs mt-3" style={{ color: "var(--high)" }}>{error}</p>}
-        <button className="w-full mt-4 rounded-lg py-2.5 text-sm font-semibold" style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }} onClick={submit} disabled={submitting}>
+        <textarea className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} placeholder="Feedback content *" rows={4} value={content} onChange={(e) => setContent(e.target.value)} />
+        {error && <p className="text-xs mt-3" style={{ color: "var(--red)" }}>{error}</p>}
+        <button className="w-full mt-4 rounded-lg py-2.5 text-sm font-semibold" style={{ backgroundColor: "var(--accent)", color: "var(--paper)" }} onClick={submit} disabled={submitting}>
           {submitting ? "Creating..." : "Add Feedback"}
         </button>
       </div>
@@ -58,20 +58,20 @@ function AddOpenHouseModal({ onClose, onCreated }: { onClose: () => void; onCrea
   };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.6)" }} onClick={onClose}>
-      <div className="rounded-xl p-6 w-full max-w-md" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }} onClick={(e) => e.stopPropagation()}>
+      <div className="rounded-xl p-6 w-full max-w-md" style={{ backgroundColor: "var(--card)", border: "1px solid var(--line)" }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold" style={{ color: "var(--text)", fontFamily: "Instrument Serif, serif" }}>Add Open House</h3>
-          <button onClick={onClose} style={{ color: "var(--text3)" }}><X size={18} /></button>
+          <h3 className="text-sm font-semibold" style={{ color: "var(--ink)", fontFamily: "Instrument Serif, serif" }}>Add Open House</h3>
+          <button onClick={onClose} style={{ color: "var(--muted2)" }}><X size={18} /></button>
         </div>
         <div className="space-y-3">
-          <select className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} value={dealId} onChange={(e) => setDealId(e.target.value)}>
+          <select className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} value={dealId} onChange={(e) => setDealId(e.target.value)}>
             <option value="">Select property *</option>
             {deals.map((d: any) => <option key={d.id} value={d.id}>{d.address}</option>)}
           </select>
-          <input className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--bg)", color: "var(--text)", borderColor: "var(--border)" }} type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} />
+          <input className="w-full rounded-lg px-3 py-2.5 text-sm border" style={{ backgroundColor: "var(--paper)", color: "var(--ink)", borderColor: "var(--line)" }} type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} />
         </div>
-        {error && <p className="text-xs mt-3" style={{ color: "var(--high)" }}>{error}</p>}
-        <button className="w-full mt-4 rounded-lg py-2.5 text-sm font-semibold" style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }} onClick={submit} disabled={submitting}>
+        {error && <p className="text-xs mt-3" style={{ color: "var(--red)" }}>{error}</p>}
+        <button className="w-full mt-4 rounded-lg py-2.5 text-sm font-semibold" style={{ backgroundColor: "var(--accent)", color: "var(--paper)" }} onClick={submit} disabled={submitting}>
           {submitting ? "Creating..." : "Schedule Open House"}
         </button>
       </div>
@@ -89,20 +89,20 @@ export default function CommunicationsClient({ initialFeedback, initialOpenHouse
     <div className="px-4 sm:px-6 pt-4 pb-6 space-y-6">
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg" style={{ fontFamily: "Instrument Serif, serif", color: "var(--text)" }}>Communications</h2>
+          <h2 className="text-lg" style={{ fontFamily: "Instrument Serif, serif", color: "var(--ink)" }}>Communications</h2>
         </div>
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}>Feedback Drafts ({feedback.length})</h3>
-          <button onClick={() => setShowFeedbackAdd(true)} className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-semibold" style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }}><Plus size={12} /> Add</button>
+          <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted2)", fontFamily: "DM Mono, monospace" }}>Feedback Drafts ({feedback.length})</h3>
+          <button onClick={() => setShowFeedbackAdd(true)} className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-semibold" style={{ backgroundColor: "var(--accent)", color: "var(--paper)" }}><Plus size={12} /> Add</button>
         </div>
         {feedback.length === 0 ? (
-          <p className="text-sm" style={{ color: "var(--text3)" }}>No feedback drafts yet.</p>
+          <p className="text-sm" style={{ color: "var(--muted2)" }}>No feedback drafts yet.</p>
         ) : (
           <div className="space-y-2">
             {feedback.map((f: any) => (
-              <div key={f.id} className="rounded-lg p-3" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}>
-                <p className="text-xs line-clamp-2" style={{ color: "var(--text2)" }}>{f.content?.slice(0, 200)}</p>
-                <span className="text-[10px] mt-1 inline-block" style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}>{f.submitted ? "Sent" : "Draft"} · {new Date(f.created_at).toLocaleDateString()}</span>
+              <div key={f.id} className="rounded-lg p-3" style={{ backgroundColor: "var(--card)", border: "1px solid var(--line)" }}>
+                <p className="text-xs line-clamp-2" style={{ color: "var(--muted)" }}>{f.content?.slice(0, 200)}</p>
+                <span className="text-[10px] mt-1 inline-block" style={{ color: "var(--muted2)", fontFamily: "DM Mono, monospace" }}>{f.submitted ? "Sent" : "Draft"} · {new Date(f.created_at).toLocaleDateString()}</span>
               </div>
             ))}
           </div>
@@ -111,17 +111,17 @@ export default function CommunicationsClient({ initialFeedback, initialOpenHouse
 
       <div>
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}>Open Houses ({openHouses.length})</h3>
-          <button onClick={() => setShowOpenHouseAdd(true)} className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-semibold" style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }}><Plus size={12} /> Add</button>
+          <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted2)", fontFamily: "DM Mono, monospace" }}>Open Houses ({openHouses.length})</h3>
+          <button onClick={() => setShowOpenHouseAdd(true)} className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-semibold" style={{ backgroundColor: "var(--accent)", color: "var(--paper)" }}><Plus size={12} /> Add</button>
         </div>
         {openHouses.length === 0 ? (
-          <p className="text-sm" style={{ color: "var(--text3)" }}>No open houses scheduled.</p>
+          <p className="text-sm" style={{ color: "var(--muted2)" }}>No open houses scheduled.</p>
         ) : (
           <div className="space-y-2">
             {openHouses.map((oh: any) => (
-              <div key={oh.id} className="rounded-lg p-3" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}>
-                <p className="text-sm font-medium" style={{ color: "var(--text)" }}>{oh.deals?.address || "Unknown property"}</p>
-                <span className="text-[10px]" style={{ color: "var(--text3)", fontFamily: "DM Mono, monospace" }}>{new Date(oh.scheduled_at).toLocaleString()} · {oh.status}</span>
+              <div key={oh.id} className="rounded-lg p-3" style={{ backgroundColor: "var(--card)", border: "1px solid var(--line)" }}>
+                <p className="text-sm font-medium" style={{ color: "var(--ink)" }}>{oh.deals?.address || "Unknown property"}</p>
+                <span className="text-[10px]" style={{ color: "var(--muted2)", fontFamily: "DM Mono, monospace" }}>{new Date(oh.scheduled_at).toLocaleString()} · {oh.status}</span>
               </div>
             ))}
           </div>
